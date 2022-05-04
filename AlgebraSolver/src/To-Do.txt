@@ -19,7 +19,7 @@ Day 1 (5/2/2022):
 
 Day 2 (5/3/2022):
 1) Implement the JUnit Framework to "test" all the equations used on Day 1. ✅
-2) Use the Equation Test Class with these equations:
-    -> num + 0 = 0
+2) Use the Equation Test Class with this equation:
+    -> num + 0 = 0 ✅
 3) Fix the Equation class's validate method to include variable strings with 
-   length greater than 1.
+   length greater than 1 (Credit to Stack OverFlow). ✅
