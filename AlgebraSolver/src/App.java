@@ -1,23 +1,6 @@
 import java.util.Scanner;
-/* To-Do List for Algebra Solver Project:
- * Day 1 (5/2/2022):
- * 1) Make a small imput-program for App.java ✅
- * 2) Set-up the Equation class with the solve method ✅
- * 3) Test the solver program with the following equations:
- *  -> x + 1 = 2 ✅
- *  -> 1 + x = 2 ✅
- *  -> 2 = x + 1 ✅
- *  -> 2 = 1 + x ✅
- *  -> x - 1 = 2 ✅
- *  -> 1 - x = 2 ✅
- *  -> 2 = x - 1 ✅
- *  -> 2 = 1 - x ✅
- *  -> x = 1 + 2 ✅
- *  -> x = 2 - 1 ✅
- *  -> 1 + 2 = x ✅
- *  -> 2 - 1 = x ✅
- * 4) Create a validate method for the Equation class, then incorporate it into
- *    the program. ✅
+/* Author: Lucas Rodriguez
+ * History (Process) is Outlined in the To-Do text file
  */
 public class App {
     public static void main(String[] args) throws Exception {
