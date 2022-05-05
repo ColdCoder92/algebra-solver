@@ -80,4 +80,22 @@ public class EquationTest {
         assertTrue(eq.validate());
         assertEquals("num = 0", eq.solveTest());
     }
+    @Test
+    public void test14(){
+        var eq = new Equation("x = 5");
+        assertTrue(eq.validate());
+        assertEquals("x = 5", eq.solveTest());
+    }
+    @Test
+    public void test15(){
+        var eq = new Equation("x + 2 + 2 = 8");
+        assertTrue(eq.validate());
+        assertEquals("x = 4", eq.solveTest());
+    }
+    @Test
+    public void test16(){
+        var eq = new Equation("x = 3 + 3 + 3 - 4");
+        assertTrue(eq.validate());
+        assertEquals("x = 5", eq.solveTest());
+    }
 }
