@@ -15,26 +15,34 @@ public class Equation {
         this.equation = equation;
     }
     // Equation Variable Getter
-    public String getVar(String expr){
+    public String getVar(){
         String variable = "";
-        for (int i = 0; i < expr.length(); i++){
-            if ((expr.charAt(i) >= 65 && expr.charAt(i) <= 90)
-            || expr.charAt(i) >= 97 && expr.charAt(i) <= 122){
-                variable += expr.charAt(i);
-            }
-            else {
-                break;
+        for (int i = 0; i < getEquation().length(); i++){
+            if ((getEquation().charAt(i) >= 65 && getEquation().charAt(i) <= 90)
+            || (getEquation().charAt(i) >= 97 && getEquation().charAt(i) <= 122)){
+                variable += getEquation().charAt(i);
             }
         }
-        System.out.println(variable);
         return variable;
     }
     // Array Swap Method (To be used only in the Equation class methods)
     // Note: Whitespaces are added in consistency with the solve methods
     public void swap(String[] arr){
         String temp = arr[0].trim();
-        arr[0] = arr[1].trim() + " ";
-        arr[1] = " " + temp;
+        arr[0] = arr[1].trim();
+        arr[1] = temp;
+    }
+    // This method counts the number of integers in one side of an equation
+    // To be used only in the Equation class methods
+    private int intCount(String expr){
+        int count = 0;
+        for (int i = 0; i < expr.length(); i++){
+            if (expr.charAt(i) >= 48 && expr.charAt(i) <= 57){
+                count++;
+            }
+        }
+        //System.out.println(count);
+        return count;
     }
     // This method counts the number of variables in the equation
     // To be used only in the Equation class methods
@@ -75,9 +83,9 @@ public class Equation {
             return false;
         }
         // Contains "+" or "-" sign for either side of length of at least 3?
-        if ((eqParts[0].trim().length() >= 3 
+        if ((eqParts[0].trim().length() >= 3 && getVar().length() < 2
         && !(eqParts[0].contains("+") || eqParts[0].contains("-")))
-        || (eqParts[1].trim().length() >= 3 
+        || (eqParts[1].trim().length() >= 3  && getVar().length() < 2
         && !(eqParts[1].contains("+") || eqParts[1].contains("-")))){
             return false;
         }
@@ -86,7 +94,7 @@ public class Equation {
     }
     /* This method is meant to solve the equation by the following methods:
      * 1) Isolate the variable by adding (subtracting if "+" is present) both
-     * sides of the equation by a number from left to right.
+     * sides of the equation by a number.
      */
     public void solve(){
         String[] eqParts = getEquation().split("=");
@@ -95,7 +103,9 @@ public class Equation {
         String solution = "";
         int eqNum;
         int lone;
-        if (eqParts[0].length() > 5){ // var +/- num +/- num +/- ... = num
+
+        if (intCount(eqParts[0]) >= 2){ 
+            // ... +/- num +/- num +/- ... = ?
             int simpNum = 0; 
             String operator = "+";
             for (int i = 0; i < eqParts[0].length(); i++){
@@ -108,17 +118,28 @@ public class Equation {
                 if (eqParts[0].charAt(i) >= 48 
                 && eqParts[0].charAt(i) <= 57){
                     if (operator.equals("+")){
-                        simpNum += Integer.parseInt(eqParts[0].substring(i, i+1));
+                        simpNum += Integer.valueOf(eqParts[0].substring(i, i+1));
                     }
                     else if (operator.equals("-")){
-                        simpNum -= Integer.parseInt(eqParts[0].substring(i, i+1));
+                        simpNum -= Integer.valueOf(eqParts[0].substring(i, i+1));
                     }
                 }
             }
-            eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])),
-            eqParts[0].indexOf(getVar(eqParts[0])+1)) + operator + simpNum;
+            if (eqParts[0].contains(getVar())){// var +/- res = num
+                eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar()),
+                eqParts[0].lastIndexOf(getVar())+getVar().length());
+                if (operator == "+" && simpNum > 0){
+                    eqParts[0] += operator;
+                }
+                eqParts[0] += simpNum;    
+                System.out.println(eqParts[0]);
+            }
+            else if (eqParts[1].contains(getVar())){//+/-res = var (+ is void)
+                eqParts[0] = Integer.toString(simpNum);
+            }
         }
-        if (eqParts[1].length() > 5){ // num = var +/- num +/- num +/- ...
+        if (intCount(eqParts[1]) >= 2){ 
+            // ? = ... +/- num +/- num +/- ...
             int simpNum = 0; 
             String operator = "+";
             for (int i = 0; i < eqParts[1].length(); i++){
@@ -131,114 +152,91 @@ public class Equation {
                 if (eqParts[1].charAt(i) >= 48 
                 && eqParts[1].charAt(i) <= 57){
                     if (operator.equals("+")){
-                        simpNum += Integer.parseInt(eqParts[1].substring(i, i+1));
+                        simpNum += Integer.valueOf(eqParts[1].substring(i, i+1));
                     }
                     else if (operator.equals("-")){
-                        simpNum -= Integer.parseInt(eqParts[1].substring(i, i+1));
+                        simpNum -= Integer.valueOf(eqParts[1].substring(i, i+1));
                     }
                 }
             }
-            eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar(eqParts[1])),
-            eqParts[1].indexOf(getVar(eqParts[1]))+1) + operator + simpNum;
+            if (eqParts[1].contains(getVar())){// num = var +/- res
+                eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar()),
+                eqParts[1].lastIndexOf(getVar())+getVar().length())
+                + operator + simpNum;    
+            }
+            else if (eqParts[0].contains(getVar())){//var = +/-res (+ is void)
+                eqParts[1] = Integer.toString(simpNum);
+            }
+            System.out.println(eqParts[1]);
         }
         if (eqParts[0].length() >= 3){ // * * * = *
-            if (!(eqParts[1].charAt(0) >= 48 
-            && eqParts[1].charAt(0) <= 57)){
-                int result = 0;
-                if (eqParts[0].contains("+")){    // num + num = var
-                    result = Integer.parseInt(eqParts[0].substring(0, 1));
-                    result += Integer.parseInt(eqParts[0].substring(eqParts[0].length()-1));
+            lone = Integer.parseInt(eqParts[1]);
+            if (eqParts[0].contains("+")){
+                if (eqParts[0].charAt(0) >= 48 
+                && eqParts[0].charAt(0) <= 57){   // num + var = num
+                    eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
+                    lone -= eqNum;
+                    eqParts[0] = eqParts[0].substring(eqParts[0].indexOf("+")+1);
                 }
-                else if (eqParts[0].contains("-")){ // num - num = var
-                    result = Integer.parseInt(eqParts[0].substring(0, 1));
-                    result -= Integer.parseInt(eqParts[0].substring(eqParts[0].length()-1));
+                else {  // var + num = num
+                    eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
+                    lone -= eqNum;
+                    eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("+"));
                 }
-                solution = eqParts[1] + " = " + result;
             }
-            else {
-                lone = Integer.parseInt(eqParts[1]);
-                if (eqParts[0].contains("+")){
-                    if (eqParts[0].charAt(0) >= 48 
-                    && eqParts[0].charAt(0) <= 57){   // num + var = num
-                        eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
-                        lone -= eqNum;
-                        eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])));
-                    }
-                    else {  // var + num = num
-                        eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
-                        lone -= eqNum;
-                        eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("+"));
-                    }
+            if (eqParts[0].contains("-")){
+                if (eqParts[0].charAt(0) >= 48 
+                && eqParts[0].charAt(0) <= 57){   // num - var = num
+                    eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
+                    lone = (lone - eqNum) * -1;
+                    eqParts[0] = eqParts[0].substring(eqParts[0].indexOf("-")+1);
                 }
-                if (eqParts[0].contains("-")){
-                    if (eqParts[0].charAt(0) >= 48 
-                    && eqParts[0].charAt(0) <= 57){   // num - var = num
-                        eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
-                        lone = (lone - eqNum) * -1;
-                        eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])));
-                    }
-                    else {  // var - num = num
-                        eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
-                        lone += eqNum;
-                        eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("-"));
-                    }
+                else {  // var - num = num
+                    eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
+                    lone += eqNum;
+                    eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("-"));
                 }
-                eqParts[0] = eqParts[0].trim();
-                solution = eqParts[0] + " = " + lone;
             }
+            eqParts[0] = eqParts[0].trim();
+            solution = eqParts[0] + " = " + lone;
         }
         else if (eqParts[1].length() >= 3){ // * = * * *
-            if (!(eqParts[0].charAt(0) >= 48 
-            && eqParts[0].charAt(0) <= 57)){
-                int result = 0;
-                if (eqParts[1].contains("+")){    // x = num + num
-                    result = Integer.parseInt(eqParts[1].substring(0, 1));
-                    result += Integer.parseInt(eqParts[1].substring(eqParts[1].length()-1));
+            lone = Integer.parseInt(eqParts[0]);
+            if (eqParts[1].contains("+")){
+                if (eqParts[1].charAt(0) >= 48 
+                && eqParts[1].charAt(0) <= 57){   // num = num + var
+                    eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
+                    lone -= eqNum;
+                    eqParts[1] = eqParts[1].substring(eqParts[1].indexOf("+")+1);
                 }
-                else if (eqParts[1].contains("-")){ // x = num - num
-                    result = Integer.parseInt(eqParts[1].substring(0, 1));
-                    result -= Integer.parseInt(eqParts[1].substring(eqParts[1].length()-1));
+                else {  // num = var + num
+                    eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
+                    lone -= eqNum;
+                    eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("+"));
                 }
-                solution = eqParts[0] + " = " + result;
             }
-            else {
-                lone = Integer.parseInt(eqParts[0]);
-                if (eqParts[1].contains("+")){
-                    if (eqParts[1].charAt(0) >= 48 
-                    && eqParts[1].charAt(0) <= 57){   // num = num + var
-                        eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
-                        lone -= eqNum;
-                        eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar(eqParts[1])));
-                    }
-                    else {  // num = var + num
-                        eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
-                        lone -= eqNum;
-                        eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("+"));
-                    }
+            if (eqParts[1].contains("-")){
+                if (eqParts[1].charAt(0) >= 48 
+                && eqParts[1].charAt(0) <= 57){   // num = num - var
+                    eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
+                    lone = (lone - eqNum) * -1;
+                    eqParts[1] = eqParts[1].substring(eqParts[1].indexOf("-")+1);
                 }
-                if (eqParts[1].contains("-")){
-                    if (eqParts[1].charAt(0) >= 48 
-                    && eqParts[1].charAt(0) <= 57){   // num = num - var
-                        eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
-                        lone = (lone - eqNum) * -1;
-                        eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar(eqParts[1])));
-                    }
-                    else {  // num = var - num
-                        eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
-                        lone += eqNum;
-                        eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("-"));
-                    }
+                else {  // num = var - num
+                    eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
+                    lone += eqNum;
+                    eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("-"));
                 }
-                eqParts[1] = eqParts[1].trim();
-                solution = eqParts[1] + " = " + lone;
             }
+            eqParts[1] = eqParts[1].trim();
+            solution = eqParts[1] + " = " + lone;
         }
         else { // * = *
-            if (!(eqParts[0].charAt(0) >= 48 
-            && eqParts[0].charAt(0) <= 57)){    // var = num
+            if (eqParts[0].charAt(0) >= 48 
+            && eqParts[0].charAt(0) <= 57){    // num = var
                 swap(eqParts);
             }
-            solution = String.join("=", eqParts);
+            solution = String.join(" = ", eqParts);
         }
         System.out.println(solution);
     }
@@ -250,7 +248,9 @@ public class Equation {
         String solution = "";
         int eqNum;
         int lone;
-        if (eqParts[0].length() > 5){ // var +/- num +/- num +/- ... = num
+
+        if (intCount(eqParts[0]) >= 2){ 
+            // ... +/- num +/- num +/- ... = ?
             int simpNum = 0; 
             String operator = "+";
             for (int i = 0; i < eqParts[0].length(); i++){
@@ -263,18 +263,28 @@ public class Equation {
                 if (eqParts[0].charAt(i) >= 48 
                 && eqParts[0].charAt(i) <= 57){
                     if (operator.equals("+")){
-                        simpNum += Integer.parseInt(eqParts[0].substring(i, i+1));
+                        simpNum += Integer.valueOf(eqParts[0].substring(i, i+1));
                     }
                     else if (operator.equals("-")){
-                        simpNum -= Integer.parseInt(eqParts[0].substring(i, i+1));
+                        simpNum -= Integer.valueOf(eqParts[0].substring(i, i+1));
                     }
                 }
             }
-            eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])),
-            eqParts[0].indexOf(getVar(eqParts[0])+getVar(eqParts[0]).length()))
-            + operator + simpNum;
+            if (eqParts[0].contains(getVar())){// var +/- res = num
+                eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar()),
+                eqParts[0].lastIndexOf(getVar())+getVar().length());
+                if (operator == "+" && simpNum > 0){
+                    eqParts[0] += operator;
+                }
+                eqParts[0] += simpNum;    
+                System.out.println(eqParts[0]);
+            }
+            else if (eqParts[1].contains(getVar())){//+/-res = var (+ is void)
+                eqParts[0] = Integer.toString(simpNum);
+            }
         }
-        if (eqParts[1].length() > 5){ // num = var +/- num +/- num +/- ...
+        if (intCount(eqParts[1]) >= 2){ 
+            // ? = ... +/- num +/- num +/- ...
             int simpNum = 0; 
             String operator = "+";
             for (int i = 0; i < eqParts[1].length(); i++){
@@ -287,108 +297,84 @@ public class Equation {
                 if (eqParts[1].charAt(i) >= 48 
                 && eqParts[1].charAt(i) <= 57){
                     if (operator.equals("+")){
-                        simpNum += Integer.parseInt(eqParts[1].substring(i, i+1));
+                        simpNum += Integer.valueOf(eqParts[1].substring(i, i+1));
                     }
                     else if (operator.equals("-")){
-                        simpNum -= Integer.parseInt(eqParts[1].substring(i, i+1));
+                        simpNum -= Integer.valueOf(eqParts[1].substring(i, i+1));
                     }
                 }
             }
-            eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar(eqParts[0])),
-            eqParts[1].indexOf(getVar(eqParts[1]))+getVar(eqParts[1]).length())
-            + operator + simpNum;
+            if (eqParts[1].contains(getVar())){// num = var +/- res
+                eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar()),
+                eqParts[1].lastIndexOf(getVar())+getVar().length())
+                + operator + simpNum;    
+            }
+            else if (eqParts[0].contains(getVar())){//var = +/-res (+ is void)
+                eqParts[1] = Integer.toString(simpNum);
+            }
+            System.out.println(eqParts[1]);
         }
         if (eqParts[0].length() >= 3){ // * * * = *
-            if (!(eqParts[1].charAt(0) >= 48 
-            && eqParts[1].charAt(0) <= 57)){
-                int result = 0;
-                if (eqParts[0].contains("+")){    // num + num = var
-                    result = Integer.parseInt(eqParts[0].substring(0, 1));
-                    result += Integer.parseInt(eqParts[0].substring(eqParts[0].length()-1));
+            lone = Integer.parseInt(eqParts[1]);
+            if (eqParts[0].contains("+")){
+                if (eqParts[0].charAt(0) >= 48 
+                && eqParts[0].charAt(0) <= 57){   // num + var = num
+                    eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
+                    lone -= eqNum;
+                    eqParts[0] = eqParts[0].substring(eqParts[0].indexOf("+")+1);
                 }
-                else if (eqParts[0].contains("-")){ // num - num = var
-                    result = Integer.parseInt(eqParts[0].substring(0, 1));
-                    result -= Integer.parseInt(eqParts[0].substring(eqParts[0].length()-1));
+                else {  // var + num = num
+                    eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
+                    lone -= eqNum;
+                    eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("+"));
                 }
-                solution = eqParts[1] + " = " + result;
             }
-            else {
-                lone = Integer.parseInt(eqParts[1]);
-                if (eqParts[0].contains("+")){
-                    if (eqParts[0].charAt(0) >= 48 
-                    && eqParts[0].charAt(0) <= 57){   // num + var = num
-                        eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
-                        lone -= eqNum;
-                        eqParts[0] = eqParts[0].substring(eqParts[0].indexOf("+")+1);
-                    }
-                    else {  // var + num = num
-                        eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
-                        lone -= eqNum;
-                        eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("+"));
-                    }
+            if (eqParts[0].contains("-")){
+                if (eqParts[0].charAt(0) >= 48 
+                && eqParts[0].charAt(0) <= 57){   // num - var = num
+                    eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
+                    lone = (lone - eqNum) * -1;
+                    eqParts[0] = eqParts[0].substring(eqParts[0].indexOf("-")+1);
                 }
-                if (eqParts[0].contains("-")){
-                    if (eqParts[0].charAt(0) >= 48 
-                    && eqParts[0].charAt(0) <= 57){   // num - var = num
-                        eqNum = Integer.parseInt(eqParts[0].substring(0, 1));
-                        lone = (lone - eqNum) * -1;
-                        eqParts[0] = eqParts[0].substring(eqParts[0].indexOf("-")+1);
-                    }
-                    else {  // var - num = num
-                        eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
-                        lone += eqNum;
-                        eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("-"));
-                    }
+                else {  // var - num = num
+                    eqNum = Integer.valueOf(eqParts[0].substring(eqParts[0].length()-1));
+                    lone += eqNum;
+                    eqParts[0] = eqParts[0].substring(0, eqParts[0].indexOf("-"));
                 }
-                eqParts[0] = eqParts[0].trim();
-                solution = eqParts[0] + " = " + lone;
             }
+            eqParts[0] = eqParts[0].trim();
+            solution = eqParts[0] + " = " + lone;
         }
         else if (eqParts[1].length() >= 3){ // * = * * *
-            if (!(eqParts[0].charAt(0) >= 48 
-            && eqParts[0].charAt(0) <= 57)){
-                int result = 0;
-                if (eqParts[1].contains("+")){    // x = num + num
-                    result = Integer.parseInt(eqParts[1].substring(0, 1));
-                    result += Integer.parseInt(eqParts[1].substring(eqParts[1].length()-1));
+            lone = Integer.parseInt(eqParts[0]);
+            if (eqParts[1].contains("+")){
+                if (eqParts[1].charAt(0) >= 48 
+                && eqParts[1].charAt(0) <= 57){   // num = num + var
+                    eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
+                    lone -= eqNum;
+                    eqParts[1] = eqParts[1].substring(eqParts[1].indexOf("+")+1);
                 }
-                else if (eqParts[1].contains("-")){ // x = num - num
-                    result = Integer.parseInt(eqParts[1].substring(0, 1));
-                    result -= Integer.parseInt(eqParts[1].substring(eqParts[1].length()-1));
+                else {  // num = var + num
+                    eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
+                    lone -= eqNum;
+                    eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("+"));
                 }
-                solution = eqParts[0] + " = " + result;
             }
-            else {
-                lone = Integer.parseInt(eqParts[0]);
-                if (eqParts[1].contains("+")){
-                    if (eqParts[1].charAt(0) >= 48 
-                    && eqParts[1].charAt(0) <= 57){   // num = num + var
-                        eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
-                        lone -= eqNum;
-                        eqParts[1] = eqParts[1].substring(eqParts[1].indexOf("+")+1);
-                    }
-                    else {  // num = var + num
-                        eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
-                        lone -= eqNum;
-                        eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("+"));
-                    }
+            if (eqParts[1].contains("-")){
+                if (eqParts[1].charAt(0) >= 48 
+                && eqParts[1].charAt(0) <= 57){   // num = num - var
+                    eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
+                    lone = (lone - eqNum) * -1;
+                    eqParts[1] = eqParts[1].substring(eqParts[1].indexOf("-")+1);
                 }
-                if (eqParts[1].contains("-")){
-                    if (eqParts[1].charAt(0) >= 48 
-                    && eqParts[1].charAt(0) <= 57){   // num = num - var
-                        eqNum = Integer.parseInt(eqParts[1].substring(0, 1));
-                        lone = (lone - eqNum) * -1;
-                        eqParts[1] = eqParts[1].substring(eqParts[1].indexOf("-")+1);
-                    }
-                    else {  // num = var - num
-                        eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
-                        lone += eqNum;
-                        eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("-"));
-                    }
+                else {  // num = var - num
+                    eqNum = Integer.valueOf(eqParts[1].substring(eqParts[1].length()-1));
+                    lone += eqNum;
+                    eqParts[1] = eqParts[1].substring(0, eqParts[1].indexOf("-"));
                 }
-                eqParts[1] = eqParts[1].trim();
-                solution = eqParts[1] + " = " + lone;
             }
+            eqParts[1] = eqParts[1].trim();
+            solution = eqParts[1] + " = " + lone;
         }
         else { // * = *
             if (eqParts[0].charAt(0) >= 48 

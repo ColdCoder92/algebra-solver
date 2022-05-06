@@ -69,6 +69,12 @@ public class EquationTest {
         assertEquals("x = 3", eq.solveTest());
     }
     @Test
+    public void test11A(){
+        var eq = new Equation("2 + 3 = num");
+        assertTrue(eq.validate());
+        assertEquals("num = 5", eq.solveTest());
+    }
+    @Test
     public void test12(){
         var eq = new Equation("2 - 1 = x");
         assertTrue(eq.validate());
@@ -97,5 +103,17 @@ public class EquationTest {
         var eq = new Equation("x = 3 + 3 + 3 - 4");
         assertTrue(eq.validate());
         assertEquals("x = 5", eq.solveTest());
+    }
+    @Test
+    public void test17(){
+        var eq = new Equation("num + 1 - 2 = 3");
+        assertTrue(eq.validate());
+        assertEquals("num = 4", eq.solveTest());
+    }
+    @Test
+    public void test18(){
+        var eq = new Equation("x + 2 + 3 = 4 + 5");
+        assertTrue(eq.validate());
+        assertEquals("x = 4", eq.solveTest());
     }
 }
