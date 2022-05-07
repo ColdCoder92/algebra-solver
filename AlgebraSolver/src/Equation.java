@@ -23,7 +23,21 @@ public class Equation {
                 variable += getEquation().charAt(i);
             }
         }
+        //System.out.println(variable);
         return variable;
+    }
+    /* This method determines whether both sides of the equation contain the 
+       variable or not */
+    public boolean bothHasVar(String expr1, String expr2){
+        if (!(expr1.contains(getVar()))){
+            System.out.println("false 1");
+            return false;
+        }
+        if (!(expr2.contains(getVar()))){
+            System.out.println("false 2");
+            return false;
+        }
+        return true;
     }
     // Array Swap Method (To be used only in the Equation class methods)
     // Note: Whitespaces are added in consistency with the solve methods
@@ -48,10 +62,10 @@ public class Equation {
     // To be used only in the Equation class methods
     /* Note: If a variable is a word or a substring with length greater than 1,
        then count it as a whole */
-    private int varCount(){
+    private int varCount(String expr){
         int count = 0;
         Pattern pattern = Pattern.compile("(a-zA-Z)*");
-        Matcher match = pattern.matcher(getEquation());
+        Matcher match = pattern.matcher(expr);
         if (match.find()){
             count = match.groupCount();
         }
@@ -73,13 +87,13 @@ public class Equation {
         if (!(getEquation().contains("="))){
             return false;
         }
-        // Only 1 variable?
-        if (varCount() != 1){
-            return false;
-        }
         // Contains 2 sides?
         String[] eqParts = getEquation().split("=");
         if (eqParts.length != 2){
+            return false;
+        }
+        // Only 1 variable on at least one side?
+        if (varCount(eqParts[0]) != 1 || varCount(eqParts[1]) != 1){
             return false;
         }
         // Contains "+" or "-" sign for either side of length of at least 3?
@@ -377,6 +391,30 @@ public class Equation {
             solution = eqParts[1] + " = " + lone;
         }
         else { // * = *
+            //System.out.println("* = * statement");
+            if (bothHasVar(eqParts[0], eqParts[1])){
+                // var = var
+                int leftCo = 1, rightCo = 1; // coefficients
+                if (eqParts[0].length() == 2){
+                    leftCo = Integer.parseInt(eqParts[0].substring(0, 1));
+                }
+                if (eqParts[1].length() == 2){
+                    rightCo = Integer.parseInt(eqParts[1].substring(0, 1));
+                }
+                leftCo -= rightCo;
+                rightCo -= rightCo;
+                eqParts[0] = leftCo + eqParts[0];
+                System.out.println(eqParts[0]);
+                eqParts[1] = Integer.toString(rightCo);
+                System.out.println(eqParts[1]);
+                if (eqParts[0].contains("0")){
+                    eqParts[0] = eqParts[0].substring(0, 1);
+                }
+                else if (eqParts[0].contains("1")){
+                    eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar()));
+                }
+            }
+
             if (eqParts[0].charAt(0) >= 48 
             && eqParts[0].charAt(0) <= 57){    // num = var
                 swap(eqParts);

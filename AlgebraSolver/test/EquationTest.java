@@ -116,4 +116,16 @@ public class EquationTest {
         assertTrue(eq.validate());
         assertEquals("x = 4", eq.solveTest());
     }
+    @Test
+    public void test19(){
+        var eq = new Equation("x = x");
+        assertTrue(eq.validate());
+        assertEquals("0 = 0", eq.solveTest());
+    }
+    @Test
+    public void test20(){
+        var eq = new Equation("2x = x");
+        assertTrue(eq.validate());
+        assertEquals("x = 0", eq.solveTest());
+    }
 }
