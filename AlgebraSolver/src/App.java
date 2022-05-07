@@ -9,7 +9,7 @@ public class App {
         String equationString = input.nextLine();
         Equation eq = new Equation(equationString);
         if (eq.validate()){
-            eq.solve();
+            System.out.println(eq.solveTest());
         }
         else {
             System.out.println("Sorry! That equation is invalid");
