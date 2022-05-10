@@ -14,7 +14,8 @@
             "type": "java",
             "name": "Launch App",
             "request": "launch",
-            "mainClass": "App",
+            "mainClass": "algebrafx.Solver",
+            "vmArgs": "--module-path C:/Users/lucas/OneDrive/Documents/javafx-sdk-17.0.2/lib --add-modules javafx.controls,javafx.fxml",
             "projectName": "AlgebraSolver_84baf468"
         }
     ]
