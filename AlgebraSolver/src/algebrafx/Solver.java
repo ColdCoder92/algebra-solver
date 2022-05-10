@@ -50,10 +50,10 @@ public class Solver extends Application{
             String equationString = input.getText();
             Equation eq = new Equation(equationString);
             if (eq.validate()){
-                result.setText(eq.solveTest());
+                result.setText(eq.solve());
             }
             else {
-                result.setText(eq.solveTest());
+                result.setText(eq.solve());
             }    
         });
         Scene frame = new Scene(root, 500, 500);
