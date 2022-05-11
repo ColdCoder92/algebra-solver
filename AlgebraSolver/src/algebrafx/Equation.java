@@ -84,14 +84,44 @@ public class Equation {
         }
         return count;
     }
-    /* This method validates the string to make sure it is a string. They must
+    /* Ensures that the string is an equation by returning the reason
+       for invalid equations. */
+    public String validate(){
+        //Equation with length of at least 3?
+        if (getEquation().length() <= 3){
+            return "Invalid - Too Short to be Equation!";
+        }
+        // Contains an "=" sign?
+        if (!(getEquation().contains("="))){
+            return "Invalid - No Equals Signs Present!";
+        }
+        // Contains 2 sides?
+        String[] eqParts = getEquation().split("=");
+        if (eqParts.length != 2){
+            return "Invalid - Too Many Equals Signs!";
+        }
+        // Only 1 variable on at least one side?
+        if (varCount(eqParts[0]) != 1 || varCount(eqParts[1]) != 1){
+            return "Invalid - No Variables to Solve For!";
+        }
+        // Contains "+" or "-" sign for either side of length of at least 3?
+        if ((eqParts[0].trim().length() >= 3 && getVar().length() < 2
+        && !(eqParts[0].contains("+") || eqParts[0].contains("-")))
+        || (eqParts[1].trim().length() >= 3  && getVar().length() < 2
+        && !(eqParts[1].contains("+") || eqParts[1].contains("-")))){
+            return "Invalid - At Least One Side Has No Operators for Like Terms!";
+        }
+
+        return "";
+    }
+    /* This method validates the string to make sure it is an equation. They must
      * have the following:
      * - Only one equals sign
      * - A length of 3 or greater
      * - Either a "+" or "-" symbol for either side with a length of at least 3
      * - Only one variable
      */
-    public boolean validate(){
+    public boolean validateBool(){
         //Equation with length of at least 3?
         if (getEquation().length() <= 3){
             return false;
@@ -260,7 +290,10 @@ public class Equation {
         }
         else { // * = *
             //System.out.println("* = * statement");
-            if (eqParts[0].contains(getVar(eqParts[0])) && eqParts[1].contains(getVar(eqParts[1]))){
+            if ((getVar(eqParts[0]).length() > 0 
+            && eqParts[0].contains(getVar(eqParts[0]))) 
+            && (getVar(eqParts[1]).length() > 0 
+            && eqParts[1].contains(getVar(eqParts[1])))){
                 // var = var
                 int leftCo = 1, rightCo = 1; // coefficients
                 if (eqParts[0].length() == 2){
