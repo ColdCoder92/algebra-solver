@@ -123,7 +123,7 @@ public class Equation {
      */
     public boolean validateBool(){
         //Equation with length of at least 3?
-        if (getEquation().length() <= 3){
+        if (getEquation().length() < 3){
             return false;
         }
         // Contains an "=" sign?
