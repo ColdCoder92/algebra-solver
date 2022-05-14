@@ -6,7 +6,7 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import javafx.scene.control.*;
-import javafx.scene.effect.Reflection;
+import javafx.scene.effect.DropShadow;
 import javafx.application.Application;
 import javafx.geometry.*;
 import javafx.stage.*;
@@ -30,8 +30,38 @@ public class Solver extends Application{
         Label inputLabel = new Label("Welcome! Please enter an equation to solve: ");
         root.add(inputLabel, 3, 0);
         root.add(input, 3, 2);
-        inputLabel.setOpacity(0);
         input.setOpacity(0);
+        // Create Speech Bubble
+        Arc upperBubble = new Arc(-5, 10, inputLabel.getText().length() * 3 ,
+        20, 0, 180);
+        upperBubble.setType(ArcType.OPEN);
+        upperBubble.setSmooth(true);
+        upperBubble.setFill(Color.WHITE);
+        upperBubble.setStroke(Color.BLACK);
+        upperBubble.setStrokeWidth(3);
+        Arc lowerBubble = new Arc(-5, 10, inputLabel.getText().length() * 3,
+        20, 180, 185);
+        Arc divider = new Arc(-5, 10, inputLabel.getText().length() * 3,
+        20, 190, 30);
+        lowerBubble.setType(ArcType.OPEN);
+        lowerBubble.setSmooth(true);
+        lowerBubble.setFill(Color.WHITE);
+        lowerBubble.setStroke(Color.BLACK);
+        lowerBubble.setStrokeWidth(3);
+        divider.setFill(Color.TRANSPARENT);
+        divider.setStroke(Color.WHITE);
+        divider.setStrokeWidth(3);
+        Polygon direction = new Polygon(0, 0, 40, 0, 0, 40);
+        Group speech = new Group(direction, upperBubble, lowerBubble, divider, inputLabel);
+        root.add(speech, 3, 0);
+        inputLabel.setTranslateX(-125);
+        direction.setTranslateX(-lowerBubble.getRadiusX() - 13);
+        direction.setTranslateY(lowerBubble.getRadiusY() - 5);
+        direction.setRotate(20);
+        direction.setFill(Color.TRANSPARENT);
+        direction.setStroke(Color.BLACK);
+        direction.setStrokeWidth(3);
+        speech.setOpacity(0);
         // Create and Position Solve Button
         Button solveBtn = new Button("Solve!");
         root.add(solveBtn, 4, 2);
@@ -82,7 +112,7 @@ public class Solver extends Application{
         Group happyEyes = new Group(happyLeftEye, happyRightEye);
         Group eyeSets = new Group(triangleEyes, eyes, happyEyes);
         triangleEyes.setOpacity(0);
-        //happyEyes.setOpacity(0);
+        happyEyes.setOpacity(0);
         // Position Ice Cream Character
         Group iceCream = new Group(straw, arms, cherry, upperCream, lowerCream,
         eyeSets, cone);
@@ -96,7 +126,8 @@ public class Solver extends Application{
         straw.setTranslateX(10);
         straw.setTranslateY(-77.5);
         straw.setRotate(-45);
-        iceCream.setTranslateX(-30);
+        iceCream.setTranslateX(-20);
+        iceCream.setTranslateY(20);
         rightArm.setTranslateY(-42);
         leftArm.setTranslateX(-leftArm.getWidth());
         leftArm.setTranslateY(-35);
@@ -104,12 +135,12 @@ public class Solver extends Application{
         leftEye.setTranslateX(-cherry.getRadius());
         rightEye.setTranslateX(cherry.getRadius());
         eyeSets.setTranslateY(-72.5);
-        // Create Ice Cream Reflection
-        Reflection reflectPond = new Reflection();
-        reflectPond.setFraction(0.3);
-        reflectPond.setTopOpacity(0.5);
-        reflectPond.setTopOffset(0.2);
-        iceCream.setEffect(reflectPond);
+        // Create Ice Cream Shadow
+        DropShadow shadow = new DropShadow(10, Color.BLACK);
+        shadow.setOffsetX(5);
+        shadow.setOffsetY(20);
+        shadow.setHeight(20);
+        iceCream.setEffect(shadow);
         // Right Arm Waving Animation
         RotateTransition wave = 
         new RotateTransition(Duration.seconds(1), rightArm);
@@ -125,11 +156,11 @@ public class Solver extends Application{
         armUp.setByY(-7);
         armUp.setAutoReverse(true);
         armUp.play();
-        // Appear Animation for Input Label
-        FadeTransition appear = new FadeTransition(Duration.seconds(1), inputLabel);
-        appear.setCycleCount(1);
-        appear.setByValue(1);
-        appear.play();
+        // Appear Animation for Speech
+        FadeTransition showSpeech = new FadeTransition(Duration.seconds(1), speech);
+        showSpeech.setCycleCount(1);
+        showSpeech.setByValue(1);
+        showSpeech.play();
         // Lowering Right Arm Animation (Setting angle to left arm's one)
         RotateTransition armDown = 
         new RotateTransition(Duration.seconds(1), rightArm);
@@ -172,9 +203,10 @@ public class Solver extends Application{
         solveBtn.setOnAction(e -> {
             result.setOpacity(0);
             // Looking at Result Field Animation
-            TranslateTransition resultLook = new TranslateTransition(Duration.seconds(1), eyes);
-            resultLook.setCycleCount(1);
+            TranslateTransition resultLook = new TranslateTransition(Duration.seconds(5), eyeSets);
+            resultLook.setCycleCount(2);
             resultLook.setByY(leftEye.getRadius());
+            resultLook.setAutoReverse(true);
             resultLook.play();
             // Appear Animation for Results Label
             FadeTransition resLabelShow = new FadeTransition(Duration.seconds(1), resultLabel);
@@ -201,7 +233,6 @@ public class Solver extends Application{
                 loadingHover.setAutoReverse(true);
                 loadingHover.setByY(-5);
                 loadingHover.play();
-    
             }
             String equationString = input.getText();
             Equation eq = new Equation(equationString);
@@ -219,15 +250,24 @@ public class Solver extends Application{
             resShow.play();
             // Hide Regular Eyes
             FadeTransition fadeEyes = new FadeTransition(Duration.millis(500), eyes);
+            fadeEyes.setDelay(Duration.seconds(4));
             fadeEyes.setByValue(-1);
             fadeEyes.setCycleCount(1);
             fadeEyes.play();
             if (eq.validateBool()){
                 // Show Happy Eyes
                 FadeTransition happy = new FadeTransition(Duration.millis(500), happyEyes);
+                happy.setDelay(Duration.seconds(4));
                 happy.setByValue(1);
                 happy.setCycleCount(1);
                 happy.play();
+                // Raise Eyes in Excitement
+                TranslateTransition raiseEyes = new TranslateTransition(Duration.seconds(2), happyEyes);
+                raiseEyes.setByY(-leftEye.getRadius());
+                raiseEyes.setDelay(Duration.seconds(4));
+                raiseEyes.setCycleCount(2);
+                raiseEyes.setAutoReverse(true);
+                raiseEyes.play();
                 // Raising Arms Rotate Animation (Hooray! The Result is Here!)
                 RotateTransition raiseRightArm = new RotateTransition(Duration.seconds(2), rightArm);
                 raiseRightArm.setDelay(Duration.seconds(4));
@@ -242,7 +282,7 @@ public class Solver extends Application{
                 raiseLeftArm.setAutoReverse(true);
                 raiseLeftArm.play();
                 // Raising Arms Translate Adjustment
-                TranslateTransition armsAdjustment = new TranslateTransition(Duration.seconds(4), arms);
+                TranslateTransition armsAdjustment = new TranslateTransition(Duration.seconds(2), arms);
                 armsAdjustment.setCycleCount(2);
                 armsAdjustment.setDelay(Duration.seconds(4));
                 armsAdjustment.setByY(-7);
@@ -252,6 +292,7 @@ public class Solver extends Application{
                 result.setText(eq.solve());
                 // Hide Happy Eyes
                 FadeTransition fadeHappyEyes = new FadeTransition(Duration.millis(500), happyEyes);
+                fadeHappyEyes.setDelay(Duration.seconds(8));
                 fadeHappyEyes.setByValue(-1);
                 fadeHappyEyes.setCycleCount(1);
                 fadeHappyEyes.play();
@@ -259,6 +300,7 @@ public class Solver extends Application{
             else {
                 // Reveal Disappointed Eyes
                 FadeTransition showSadEyes = new FadeTransition(Duration.millis(500), triangleEyes);
+                showSadEyes.setDelay(Duration.seconds(4));
                 showSadEyes.setByValue(1);
                 showSadEyes.setCycleCount(1);
                 showSadEyes.play(); 
@@ -283,12 +325,6 @@ public class Solver extends Application{
             showEyes.setByValue(1);
             showEyes.setCycleCount(1);
             showEyes.play();
-            // Prevent Eyes from Leaving Upper Cream
-            /*TranslateTransition lookUp = new TranslateTransition(Duration.seconds(1), eyes);
-            showEyes.setDelay(Duration.seconds(8));
-            lookUp.setCycleCount(1);
-            lookUp.setByY(-leftEye.getRadius());
-            lookUp.play(); */  
         });
         Scene frame = new Scene(root, 500, 500);
         mainStage.setScene(frame);
