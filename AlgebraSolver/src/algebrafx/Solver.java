@@ -384,7 +384,15 @@ public class Solver extends Application{
                 configurations.setFill(Color.WHITE);
             }
         });
-        
+        // Set Full Screen
+        fullSelect.setOnAction(e -> {
+            if (fullSelect.isSelected()){
+                mainStage.setFullScreen(true);
+            }
+            else {
+                mainStage.setFullScreen(false);
+            }
+        });
         // Transition to "Play" Scene
         playBtn.setOnAction(e -> {
             mainStage.setScene(body);
