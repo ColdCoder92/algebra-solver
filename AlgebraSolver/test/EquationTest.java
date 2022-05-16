@@ -142,4 +142,10 @@ public class EquationTest {
         assertTrue(eq.validateBool());
         assertEquals("num = 0", eq.solve());
     }
+    @Test
+    public void test22(){
+        var eq = new Equation("x + 3.5 = 4.2");
+        assertTrue(eq.validateBool());
+        assertEquals("x = 0.7", eq.solve());
+    }
 }
