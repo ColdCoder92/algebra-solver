@@ -8,10 +8,12 @@ import javafx.util.Duration;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.*;
 import javafx.stage.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
 import javafx.scene.*;
 import javafx.scene.paint.*;
 /* Author: Lucas Rodriguez
@@ -23,11 +25,52 @@ public class Solver extends Application{
 
     public void start(Stage mainStage) throws Exception{
         mainStage.setTitle("Equation Solver");
+        GridPane menu = new GridPane();
+        menu.setAlignment(Pos.CENTER);
         GridPane root = new GridPane();
         root.setAlignment(Pos.CENTER);
+        GridPane settings = new GridPane();
+        settings.setAlignment(Pos.CENTER);
+        // Create & Position Menu Title
+        Label title = new Label("Equation Solver");
+        menu.addRow(0, title);
+        title.setWrapText(true);
+        title.setAlignment(Pos.CENTER);
+        title.setFont(new Font("Arial", 50));
+        // Create & Position "Play" Button
+        Button playBtn = new Button(" Play ");
+        menu.addRow(2, playBtn);
+        playBtn.setAlignment(Pos.CENTER);
+        playBtn.setFont(new Font(20));
+        playBtn.setTranslateX(150);
+        playBtn.setTranslateY(25);
+        // Create & Position "Settings" Button
+        Button settingsBtn = new Button("Settings");
+        menu.addRow(4, settingsBtn);
+        settingsBtn.setFont(new Font(20));
+        settingsBtn.setTranslateX(137);
+        settingsBtn.setTranslateY(50);
+        // Create & Position "Exit" Button
+        Button exitBtn = new Button(" Exit ");
+        menu.addRow(6, exitBtn);
+        exitBtn.setFont(new Font(20));
+        exitBtn.setTranslateX(150);
+        exitBtn.setTranslateY(75);
+        // Create & Position "Dark Mode" Setting
+        Label darkMode = new Label("Enable Dark Mode");
+        CheckBox darkSelect = new CheckBox();
+        settings.addRow(0, darkMode, darkSelect);
+        darkSelect.setTranslateX(25);
+        // Create & Positon "Full Screen" Setting
+        Label fullScreen = new Label("Enable Full Screen");
+        CheckBox fullSelect = new CheckBox();
+        settings.addRow(1, fullScreen, fullSelect);
+        fullScreen.setTranslateY(25);
+        fullSelect.setTranslateX(25);
+        fullSelect.setTranslateY(25);
         // Create and Position input label and text field
         TextField input = new TextField();
-        Label inputLabel = new Label("Welcome! Please enter an equation to solve: ");
+        Label inputLabel = new Label("Welcome! Please enter an equation to solve.");
         root.add(inputLabel, 3, 0);
         root.add(input, 3, 2);
         input.setOpacity(0);
@@ -74,6 +117,13 @@ public class Solver extends Application{
         root.add(result, 3, 5);
         resultLabel.setOpacity(0);
         result.setOpacity(0);
+        // Create & Position "Back" Buttons
+        Button rootBack = new Button("Back");
+        root.add(rootBack, 3, 6);
+        rootBack.setTranslateY(25);
+        Button settingsBack = new Button("Back");
+        settings.add(settingsBack, 1, 2);
+        settingsBack.setTranslateY(50);
         // Create Loading Circles
         Circle loadingCircle = new Circle(5);
         Circle loadingCircle2 = new Circle(5);
@@ -148,44 +198,37 @@ public class Solver extends Application{
         wave.setFromAngle(0);
         wave.setToAngle(-45);
         wave.setAutoReverse(true);
-        wave.play();
         // Right Arm Movement for Smooth Wave
         TranslateTransition armUp = 
         new TranslateTransition(Duration.seconds(1), rightArm);
         armUp.setCycleCount(4);
         armUp.setByY(-7);
         armUp.setAutoReverse(true);
-        armUp.play();
         // Appear Animation for Speech
         FadeTransition showSpeech = new FadeTransition(Duration.seconds(1), speech);
         showSpeech.setCycleCount(1);
         showSpeech.setByValue(1);
-        showSpeech.play();
         // Lowering Right Arm Animation (Setting angle to left arm's one)
         RotateTransition armDown = 
         new RotateTransition(Duration.seconds(1), rightArm);
         armDown.setDelay(Duration.seconds(4));
         armDown.setCycleCount(1);
         armDown.setByAngle(45);
-        armDown.play();
         // Move Right Arm Down to Between Creams
         TranslateTransition armAdjust = new TranslateTransition(Duration.seconds(1), rightArm);
         armAdjust.setDelay(Duration.seconds(4));
         armAdjust.setCycleCount(1);
         armAdjust.setByY(7);
-        armAdjust.play();
         // Appear Animation for Input Field 
         FadeTransition inputFieldShow = new FadeTransition(Duration.seconds(1), input);
         inputFieldShow.setCycleCount(1);
         inputFieldShow.setDelay(Duration.seconds(4));
         inputFieldShow.setByValue(1);
-        inputFieldShow.play();
         // Appear Animation for Solve Button
         FadeTransition solveBtnShow = new FadeTransition(Duration.seconds(1), solveBtn);
         solveBtnShow.setCycleCount(1);
         solveBtnShow.setDelay(Duration.seconds(4));
         solveBtnShow.setByValue(1);
-        solveBtnShow.play();
         // Floater Animation (Moving the Character Up and Down 20 pixels)
         TranslateTransition floater = new TranslateTransition(Duration.seconds(2), iceCream);
         floater.setDelay(Duration.seconds(4));
@@ -198,7 +241,6 @@ public class Solver extends Application{
         fieldLook.setDelay(Duration.seconds(4));
         fieldLook.setCycleCount(1);
         fieldLook.setByX(leftEye.getRadius());
-        fieldLook.play();
         // Equation Solving Mechanism
         solveBtn.setOnAction(e -> {
             result.setOpacity(0);
@@ -326,8 +368,52 @@ public class Solver extends Application{
             showEyes.setCycleCount(1);
             showEyes.play();
         });
-        Scene frame = new Scene(root, 500, 500);
-        mainStage.setScene(frame);
+        Scene main = new Scene(menu, 500, 500);
+        Scene body = new Scene(root, 500, 500);
+        Scene configurations = new Scene(settings, 500, 500);
+        // Create "Activate Mechanism"
+        darkSelect.setOnAction(e -> {
+            if (darkSelect.isSelected()){
+                main.setFill(Color.BLACK);
+                body.setFill(Color.BLACK);
+                configurations.setFill(Color.BLACK);
+            }
+            else {
+                main.setFill(Color.WHITE);
+                body.setFill(Color.WHITE);
+                configurations.setFill(Color.WHITE);
+            }
+        });
+        
+        // Transition to "Play" Scene
+        playBtn.setOnAction(e -> {
+            mainStage.setScene(body);
+            wave.play();
+            armUp.play();
+            showSpeech.play();
+            armDown.play();
+            armAdjust.play();
+            inputFieldShow.play();
+            solveBtnShow.play();
+            fieldLook.play();
+        });
+        // Transition to "Settings" Scene
+        settingsBtn.setOnAction(e -> {
+            mainStage.setScene(configurations);
+        });
+        // Go Back to Main Menu from App
+        rootBack.setOnAction(e -> {
+            mainStage.setScene(main);
+        });
+        // Go Back to Main Menu from Settings
+        settingsBack.setOnAction(e -> {
+            mainStage.setScene(main);
+        });
+        // Application Close Mechanism
+        exitBtn.setOnAction(e -> {
+            Platform.exit();
+        });
+        mainStage.setScene(main);
         mainStage.show();
     }
     public static void main(String[] args) throws Exception {
