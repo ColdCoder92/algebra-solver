@@ -148,4 +148,22 @@ public class EquationTest {
         assertTrue(eq.validateBool());
         assertEquals("x = 0.7", eq.solve());
     }
+    @Test
+    public void test23(){
+        var eq = new Equation("4.6 = 0.4 - num");
+        assertTrue(eq.validateBool());
+        assertEquals("num = -4.2", eq.solve());
+    }
+    @Test
+    public void test24(){
+        var eq = new Equation("5.4 + x = -0.1");
+        assertTrue(eq.validateBool());
+        assertEquals("x = -5.5", eq.solve());
+    }
+    @Test
+    public void test25(){
+        var eq = new Equation("1.8 = 2.7 - x");
+        assertTrue(eq.validateBool());
+        assertEquals("x = 0.9", eq.solve());
+    }
 }

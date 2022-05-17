@@ -1,6 +1,8 @@
 package algebrafx;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
+// Private methods are to be used only in the Equation class methods
 public class Equation {
     private String equation;
     // Class Constructor
@@ -39,21 +41,28 @@ public class Equation {
         //System.out.println(variable);
         return variable;
     }
-    /* This method determines whether both sides of the equation contain the 
-       variable or not */
-    public boolean bothHasVar(String expr1, String expr2){
-        if (!(expr1.contains(getVar()))){
-            //System.out.println("false 1");
-            return false;
+    // This method returns the double value rounded to the hundredths place
+    private double roundHun(double num){
+        /* Compares hundredths places by getting rid of the ones and tenths 
+        digits */
+        //System.out.println(num*10);
+        //System.out.println(Math.ceil(num * 10));
+        //System.out.println((num * 10) - Math.ceil(num*10));
+        if (((num * 10) - Math.floor(num*10)) >= 0.5 
+        && Math.floor(num*10) <= num * 10){
+            num += 0.05;
         }
-        if (!(expr2.contains(getVar()))){
-            //System.out.println("false 2");
-            return false;
+        else if (num < 0 && (num * 10) - Math.ceil(num*10) <= -0.5){
+            num -= 0.05;
         }
-        return true;
+        // ex. 5.55 * 10 = 55.5 - 50 = 0.5 >= 0.5 = true
+        String numText = "" + num;
+        if (numText.length() > 3){
+            numText = numText.substring(0, 4);
+        }
+        return Double.valueOf(numText);
     }
     // This method counts all the numbers in one side of an equation
-    // To be used only in the Equation class methods
     private int numCount(String expr){
         int count = 0;
         String num = "";
@@ -80,7 +89,6 @@ public class Equation {
         return count;
     }
     // This method counts the number of variables in the equation
-    // To be used only in the Equation class methods
     /* Note: If a variable is a word or a substring with length greater than 1,
        then count it as a whole */
     private int varCount(String expr){
@@ -160,6 +168,8 @@ public class Equation {
     /* This method is meant to solve the equation by the following methods:
      * 1) Isolate the variable by adding (subtracting if "+" is present) both
      * sides of the equation by a number.
+     * 2) Divide both sides by the coefficient of the variable if the
+     * coefficient is not 1.
      */
     public String solve(){
         String[] eqParts = getEquation().split("=");
@@ -183,7 +193,7 @@ public class Equation {
                 if (eqParts[0].charAt(i) >= 48 
                 && eqParts[0].charAt(i) <= 57){
                     if (operator.equals("+")){
-                        if (i != eqParts[0].length() && eqParts[0].indexOf(".", i) == i + 1){
+                        if (eqParts[0].indexOf(".", i) == i + 1){
                             simpNum += Double.valueOf(
                                 eqParts[0].substring(
                                     i, eqParts[0].indexOf(".", i) + 2));    
@@ -194,7 +204,7 @@ public class Equation {
                         }
                     }
                     else if (operator.equals("-")){
-                        if (i < eqParts[0].length() && eqParts[1].indexOf(".", i) == i + 1){
+                        if (eqParts[1].indexOf(".", i) == i + 1){
                             simpNum -= 
                             Double.valueOf(
                                 eqParts[0].substring(
@@ -293,7 +303,7 @@ public class Equation {
                 }
             }
             eqParts[0] = eqParts[0].trim();
-            solution = eqParts[0] + " = " + lone;
+            solution = eqParts[0] + " = " + roundHun(lone);
         }
         else if (eqParts[1].length() >= 3 && numCount(eqParts[1]) == 1
         && (eqParts[1].contains("+") || eqParts[1].contains("-"))){ 
@@ -333,7 +343,7 @@ public class Equation {
                 }
             }
             eqParts[1] = eqParts[1].trim();
-            solution = eqParts[1] + " = " + lone;
+            solution = eqParts[1] + " = " + roundHun(lone);
         }
         else { // * = *
             if ((getVar(eqParts[0]).length() > 0 
