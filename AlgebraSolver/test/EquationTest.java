@@ -166,4 +166,16 @@ public class EquationTest {
         assertTrue(eq.validateBool());
         assertEquals("x = 0.9", eq.solve());
     }
+    @Test
+    public void test26(){
+        var eq = new Equation("2x + 1 = 3");
+        assertTrue(eq.validateBool());
+        assertEquals("x = 1", eq.solve());
+    }
+    @Test
+    public void test27(){
+        var eq = new Equation("4.4 = 2x - 2.2");
+        assertTrue(eq.validateBool());
+        assertEquals("x = 3.3", eq.solve());
+    }
 }

@@ -74,11 +74,18 @@ public class Equation {
                 num += ".";
             }
             else {
-                System.out.print(num);
+                //System.out.print(num);
                 if (num.length() != 0){
                     // Should count only if the string has a number
                     num = "";
-                    count++;    
+                    if(i < expr.length() - 1 
+                    && !(expr.charAt(i + 1) >= 65 && expr.charAt(i + 1) <= 90)
+                    && !(expr.charAt(i + 1) >= 97 && expr.charAt(i + 1) <= 122)){
+                        count++;
+                    }
+                    else {
+                        System.out.println(expr.charAt(i + 1));
+                    }        
                 }
             }
         }
@@ -192,6 +199,11 @@ public class Equation {
                 }
                 if (eqParts[0].charAt(i) >= 48 
                 && eqParts[0].charAt(i) <= 57){
+                    if (eqParts[0].contains(getVar())
+                    && (i < eqParts[0].length() - 1)
+                    && (eqParts[0].indexOf(getVar()) == i + 1)){
+                        continue;
+                    }
                     if (operator.equals("+")){
                         if (eqParts[0].indexOf(".", i) == i + 1){
                             simpNum += Double.valueOf(
@@ -204,7 +216,7 @@ public class Equation {
                         }
                     }
                     else if (operator.equals("-")){
-                        if (eqParts[1].indexOf(".", i) == i + 1){
+                        if (eqParts[0].indexOf(".", i) == i + 1){
                             simpNum -= 
                             Double.valueOf(
                                 eqParts[0].substring(
@@ -217,8 +229,19 @@ public class Equation {
                 }
             }
             if (eqParts[0].contains(getVar())){// var +/- res = num
-                eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar()),
-                eqParts[0].lastIndexOf(getVar())+getVar().length());
+                if ((eqParts[0].indexOf(getVar(eqParts[0])) != 0)
+                && (eqParts[0].charAt(eqParts[0].indexOf(getVar()) - 1) >= 48 
+                && eqParts[0].charAt(eqParts[0].indexOf(getVar()) - 1) <= 57)){
+                    eqParts[0] = eqParts[0].substring(
+                        eqParts[0].indexOf(getVar()) - 1,
+                        eqParts[0].lastIndexOf(getVar())+getVar().length());
+    
+                }
+                else{
+                    eqParts[0] = eqParts[0].substring(
+                        eqParts[0].indexOf(getVar()),
+                        eqParts[0].lastIndexOf(getVar())+getVar().length());
+                }
                 if (operator == "+" && simpNum > 0){
                     eqParts[0] += operator;
                 }
@@ -242,6 +265,11 @@ public class Equation {
                 }
                 if (eqParts[1].charAt(i) >= 48 
                 && eqParts[1].charAt(i) <= 57){
+                    if (eqParts[1].contains(getVar())
+                    && (i < eqParts[1].length() - 1)
+                    && (eqParts[1].indexOf(getVar()) == i + 1)){
+                        continue;
+                    }
                     if (operator.equals("+")){
                         if (i < eqParts[1].length() - 1 && eqParts[1].indexOf(".", i) == i + 1){
                             simpNum += Double.valueOf(eqParts[1].substring(i, eqParts[0].indexOf(".", i) + 2));
@@ -251,33 +279,56 @@ public class Equation {
                         }
                     }
                     else if (operator.equals("-")){
-                        simpNum -= Integer.valueOf(eqParts[1].substring(i, i+1));
+                        if (eqParts[1].indexOf(".", i) == i + 1){
+                            if (i < eqParts[1].length() - 3 ){
+                                simpNum -= Double.valueOf(eqParts[1].substring(i, eqParts[0].indexOf(".", i) + 2));
+                            }
+                            else {
+                                simpNum -= Double.valueOf(eqParts[1].substring(i));
+                            }
+                        }
+                        else {
+                            simpNum -= Integer.valueOf(eqParts[1].substring(i, i+1));
+                        }
                     }
                 }
             }
             if (eqParts[1].contains(getVar())){// num = var +/- res
-                eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar()),
-                eqParts[1].lastIndexOf(getVar())+getVar().length())
-                + operator + simpNum;    
+                if ((eqParts[1].indexOf(getVar(eqParts[1])) != 0)
+                && (eqParts[1].charAt(eqParts[1].indexOf(getVar()) - 1) >= 48 
+                && eqParts[1].charAt(eqParts[1].indexOf(getVar()) - 1) <= 57)){
+                    eqParts[1] = eqParts[1].substring(
+                        eqParts[1].indexOf(getVar()) - 1,
+                        eqParts[1].lastIndexOf(getVar())+getVar().length());
+    
+                }
+                else{
+                    eqParts[0] = eqParts[0].substring(
+                        eqParts[0].indexOf(getVar()),
+                        eqParts[0].lastIndexOf(getVar())+getVar().length());
+                }
             }
             else if (eqParts[0].contains(getVar())){//var = +/-res (+ is void)
                 eqParts[1] = Double.toString(simpNum);
             }
             System.out.println(eqParts[1]);
         }
-        if (eqParts[0].length() >= 3 && numCount(eqParts[0]) == 1
+        if (eqParts[0].length() >= 3 && numCount(eqParts[0]) >= 1
         && (eqParts[0].contains("+") || eqParts[0].contains("-"))){ 
             // * * * = *
             lone = Double.parseDouble(eqParts[1]);
             if (eqParts[0].contains("+")){
                 if (eqParts[0].charAt(0) >= 48 
-                && eqParts[0].charAt(0) <= 57){   // num + var = num
+                && eqParts[0].charAt(0) <= 57
+                && eqParts[0].indexOf(getVar(eqParts[0])) > 2){   
+                    // num + (num)var = num
                     eqNum = Double.parseDouble(eqParts[0].substring(0, 
                     eqParts[0].indexOf("+")));
                     lone -= eqNum;
-                    eqParts[0] = eqParts[0].substring(eqParts[0].indexOf("+")+1);
+                    eqParts[0] = eqParts[0].substring(
+                        eqParts[0].indexOf("+") + 1);
                 }
-                else {  // var + num = num
+                else {  // (num)var + num = num
                     eqNum = Double.valueOf(
                         eqParts[0].substring(eqParts[0].indexOf("+") + 1));
                     lone -= eqNum;
@@ -285,16 +336,17 @@ public class Equation {
                     eqParts[0].substring(0, eqParts[0].indexOf("+"));
                 }
             }
-            if (eqParts[0].contains("-")){
+            else if (eqParts[0].contains("-")){
                 if (eqParts[0].charAt(0) >= 48 
-                && eqParts[0].charAt(0) <= 57){   // num - var = num
+                && eqParts[0].charAt(0) <= 57
+                && eqParts[0].indexOf(getVar(eqParts[0])) > 2){   // num - (num)var = num
                     eqNum = Double.parseDouble(eqParts[0].substring(0, 
                     eqParts[0].indexOf("-")));
                     lone = (lone - eqNum) * -1;
                     eqParts[0] = 
                     eqParts[0].substring(eqParts[0].indexOf("-") + 1);
                 }
-                else {  // var - num = num
+                else {  // (num)var - num = num
                     eqNum = Double.valueOf(
                         eqParts[0].substring(eqParts[0].indexOf("-") + 1));
                     lone += eqNum;
@@ -303,22 +355,31 @@ public class Equation {
                 }
             }
             eqParts[0] = eqParts[0].trim();
+            if (eqParts[0].charAt(0) >= 48 && eqParts[0].charAt(0) <= 57){
+                lone /= Double.valueOf(
+                    eqParts[0].substring(
+                        0, eqParts[0].indexOf(getVar(eqParts[0]))
+                        )
+                    );
+                eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])));
+                System.out.println(eqParts[0]);
+            }
             solution = eqParts[0] + " = " + roundHun(lone);
         }
-        else if (eqParts[1].length() >= 3 && numCount(eqParts[1]) == 1
+        else if (eqParts[1].length() >= 3 && numCount(eqParts[1]) >= 1
         && (eqParts[1].contains("+") || eqParts[1].contains("-"))){ 
             // * = * * *
             lone = Double.parseDouble(eqParts[0]);
             if (eqParts[1].contains("+")){
                 if (eqParts[1].charAt(0) >= 48 
-                && eqParts[1].charAt(0) <= 57){   // num = num + var
+                && eqParts[1].charAt(0) <= 57){   // num = num + (num)var
                     eqNum = Double.parseDouble(eqParts[1].substring(0, 
                     eqParts[1].indexOf("+")));
                     lone -= eqNum;
                     eqParts[1] = 
                     eqParts[1].substring(eqParts[1].indexOf("+") + 1);
                 }
-                else {  // num = var + num
+                else {  // num = (num)var + num
                     eqNum = Double.valueOf(
                         eqParts[1].substring(eqParts[1].indexOf("+") + 1));
                     lone -= eqNum;
@@ -328,14 +389,14 @@ public class Equation {
             }
             if (eqParts[1].contains("-")){
                 if (eqParts[1].charAt(0) >= 48 
-                && eqParts[1].charAt(0) <= 57){   // num = num - var
+                && eqParts[1].charAt(0) <= 57){   // num = num - (num)var
                     eqNum = Double.parseDouble(eqParts[1].substring(0, 
                     eqParts[1].indexOf("-")));
                     lone = (lone - eqNum) * -1;
                     eqParts[1] = 
                     eqParts[1].substring(eqParts[1].indexOf("-") + 1);
                 }
-                else {  // num = var - num
+                else {  // num = (num)var - num
                     eqNum = Double.valueOf(
                         eqParts[1].substring(eqParts[1].indexOf("-") + 1));
                     lone += eqNum;
@@ -343,6 +404,15 @@ public class Equation {
                 }
             }
             eqParts[1] = eqParts[1].trim();
+            if (eqParts[1].charAt(0) >= 48 && eqParts[1].charAt(0) <= 57){
+                lone /= Double.valueOf(
+                    eqParts[1].substring(
+                        0, eqParts[1].indexOf(getVar(eqParts[1]))
+                        )
+                    );
+                eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar(eqParts[1])));
+                System.out.println(eqParts[1]);
+            }
             solution = eqParts[1] + " = " + roundHun(lone);
         }
         else { // * = *
