@@ -195,8 +195,7 @@ public class Solver extends Application{
         RotateTransition wave = 
         new RotateTransition(Duration.seconds(1), rightArm);
         wave.setCycleCount(4);
-        wave.setFromAngle(0);
-        wave.setToAngle(-45);
+        wave.setByAngle(-45);
         wave.setAutoReverse(true);
         // Right Arm Movement for Smooth Wave
         TranslateTransition armUp = 
@@ -231,7 +230,7 @@ public class Solver extends Application{
         solveBtnShow.setByValue(1);
         // Floater Animation (Moving the Character Up and Down 20 pixels)
         TranslateTransition floater = new TranslateTransition(Duration.seconds(2), iceCream);
-        floater.setDelay(Duration.seconds(4));
+        floater.setDelay(Duration.seconds(5));
         floater.setCycleCount(Integer.MAX_VALUE);
         floater.setByY(-20);
         floater.setAutoReverse(true);
@@ -412,6 +411,13 @@ public class Solver extends Application{
         // Go Back to Main Menu from App
         rootBack.setOnAction(e -> {
             mainStage.setScene(main);
+            input.setOpacity(0);
+            solveBtn.setOpacity(0);
+            resultLabel.setOpacity(0);
+            result.setOpacity(0);
+            rightArm.setTranslateY(-42);
+            rightArm.setRotate(0);
+            eyeSets.setTranslateX(0);
         });
         // Go Back to Main Menu from Settings
         settingsBack.setOnAction(e -> {
