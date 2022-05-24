@@ -21,4 +21,11 @@ public class EquationTest2 {
         var eq = new Equation("5.4 = -0.6 + 0.4num");
         assertTrue(eq.validateBool());
         assertEquals("num = 15", eq.solve());
-    }}
+    }
+    @Test
+    public void test29(){
+        var eq = new Equation("3.4x + 2.5 = 7.5 - 1.6x");
+        assertTrue(eq.validateBool());
+        assertEquals("x = 1", eq.solve());
+    }
+}
