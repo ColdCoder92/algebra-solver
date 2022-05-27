@@ -28,4 +28,10 @@ public class EquationTest2 {
         assertTrue(eq.validateBool());
         assertEquals("x = 1", eq.solve());
     }
+    @Test
+    public void test30(){
+        var eq = new Equation("2.5x + 2.5 + 2.5 = 2.4x + 2.4 + 2.4");
+        assertTrue(eq.validateBool());
+        assertEquals("x = -2", eq.solve());
+    }
 }
