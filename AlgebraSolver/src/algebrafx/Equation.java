@@ -226,16 +226,18 @@ public class Equation {
                     && (eqParts[0].indexOf(getVar(eqParts[0])) == i + 1)){
                         continue;
                     }
-                    if (eqParts[0].lastIndexOf(".", i) == i - 1){
+                    if (eqParts[0].contains(".") 
+                    && eqParts[0].lastIndexOf(".", i) == i - 1){
                         continue;
                     }
                     if (operator.equals("+")){
-                        if (eqParts[0].indexOf(".", i) == i + 1){
+                        if (eqParts[0].contains(".") 
+                        && eqParts[0].indexOf(".", i) == i + 1){
                             simpNum += Double.valueOf(
                                 eqParts[0].substring(
                                     i, eqParts[0].indexOf(".", i) + 2
                                 )
-                            );    
+                            );   
                         }
                         else {
                             simpNum += 
@@ -243,7 +245,8 @@ public class Equation {
                         }
                     }
                     else if (operator.equals("-")){
-                        if (eqParts[0].indexOf(".", i) == i + 1){
+                        if (eqParts[0].contains(".") 
+                        && eqParts[0].indexOf(".", i) == i + 1){
                             simpNum -= 
                             Double.valueOf(
                                 eqParts[0].substring(
@@ -329,11 +332,13 @@ public class Equation {
                     && (eqParts[1].indexOf(getVar(eqParts[1])) == i + 1)){
                         continue;
                     }
-                    if (eqParts[1].lastIndexOf(".", i) == i - 1){
+                    if (eqParts[1].contains(".") 
+                    && eqParts[1].lastIndexOf(".", i) == i - 1){
                         continue;
                     }
                     if (operator.equals("+")){
-                        if (eqParts[1].indexOf(".", i) == i + 1){
+                        if (eqParts[1].contains(".") 
+                        && eqParts[1].indexOf(".", i) == i + 1){
                             simpNum += Double.valueOf(
                                 eqParts[1].substring(
                                     i, eqParts[1].indexOf(".", i) + 2
@@ -346,7 +351,8 @@ public class Equation {
                         }
                     }
                     else if (operator.equals("-")){
-                        if (eqParts[1].indexOf(".", i) == i + 1){
+                        if (eqParts[1].contains(".") 
+                        && eqParts[1].indexOf(".", i) == i + 1){
                             if (i < eqParts[1].length() - 3){
                                 simpNum -= Double.valueOf(
                                     eqParts[1].substring(
@@ -626,14 +632,13 @@ public class Equation {
                 eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])));
                 System.out.println("left side: " + eqParts[0]);
             }
-            lone = roundHun(lone);
             System.out.println("result = " + lone);
             solution = eqParts[0] + " = ";
             if (("" + lone).contains(".0")){
                 solution += roundOnes(lone);
             }
             else {
-                solution += lone;
+                solution += roundHun(lone);
             }
         }
         else if (eqParts[1].length() >= 3 && numCount(eqParts[1]) >= 1
@@ -682,13 +687,12 @@ public class Equation {
                 eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar(eqParts[1])));
                 System.out.println("right side: " + eqParts[1]);
             }
-            lone = roundHun(lone);
             solution = eqParts[1] + " = ";
             if (("" + lone).contains(".0")){
                 solution += roundOnes(lone);
             }
             else {
-                solution += lone;
+                solution += roundHun(lone);
             }
         }
         else { // * = *
