@@ -11,34 +11,25 @@ public class Equation {
     }
     // Equation Getter
     public String getEquation() {
-        return equation;
+        return this.equation;
     }
     // Equation Setter
     public void setEquation(String equation) {
         this.equation = equation;
     }
-    // Equation Variable Getter
+    // Optimized Variable Getter
+    // Used with Pattern and Matcher class
     public String getVar(){
         String variable = "";
-        for (int i = 0; i < getEquation().length(); i++){
-            if ((getEquation().charAt(i) >= 65 && getEquation().charAt(i) <= 90)
-            || (getEquation().charAt(i) >= 97 && getEquation().charAt(i) <= 122)){
-                variable += getEquation().charAt(i);
-            }
+        Pattern alpha = Pattern.compile("[a-zA-Z]+");
+        Matcher target = alpha.matcher(getEquation());
+        if (target.find()){
+            variable = target.group();
         }
-        //System.out.println(variable);
-        return variable;
-    }
-    // Equation Variable Getter with Expression String Parameter
-    public String getVar(String expr){
-        String variable = "";
-        for (int i = 0; i < expr.length(); i++){
-            if ((expr.charAt(i) >= 65 && expr.charAt(i) <= 90)
-            || (expr.charAt(i) >= 97 && expr.charAt(i) <= 122)){
-                variable += expr.charAt(i);
-            }
+        else {
+            variable = "Not Found!";
         }
-        //System.out.println(variable);
+        System.out.println("equation variable = " + variable);
         return variable;
     }
     /* If a decimal has a 0 to the right of the decimal place, the number 
@@ -145,7 +136,7 @@ public class Equation {
             return "Invalid - Too Many Equals Signs!";
         }
         // Only 1 variable on at least one side?
-        if (varCount(eqParts[0]) != 1 || varCount(eqParts[1]) != 1){
+        if (varCount(eqParts[0]) == 0 || varCount(eqParts[1]) == 0){
             return "Invalid - No Variables to Solve For!";
         }
         // Contains "+" or "-" sign for either side of length of at least 3?
@@ -180,7 +171,7 @@ public class Equation {
             return false;
         }
         // Only 1 variable on at least one side?
-        if (varCount(eqParts[0]) != 1 || varCount(eqParts[1]) != 1){
+        if (varCount(eqParts[0]) == 0 || varCount(eqParts[1]) == 0){
             return false;
         }
         // Contains "+" or "-" sign for either side of length of at least 3?
@@ -207,10 +198,11 @@ public class Equation {
         double eqNum;
         double lone;
 
-        if (numCount(eqParts[0]) >= 2){ 
+        if (numCount(eqParts[0]) >= 2 || varCount(eqParts[0]) >= 2){ 
             System.out.println("here: numCount is at least 2 in left side");
             // ... +/- num +/- num +/- ... = ?
-            double simpNum = 0; 
+            double simpNum = 0;
+            //double simpVar = 0; 
             String operator = "+";
             for (int i = 0; i < eqParts[0].length(); i++){
                 if (eqParts[0].charAt(i) == '+'){
@@ -220,10 +212,10 @@ public class Equation {
                     operator = "-";
                 }
                 if (isNum(eqParts[0], i)){
-                    if ((getVar(eqParts[0]).length() > 0 
-                    && eqParts[0].contains(getVar(eqParts[0])))
+                    if ((getVar().length() > 0 
+                    && eqParts[0].contains(getVar()))
                     && (i < eqParts[0].length() - 1)
-                    && (eqParts[0].indexOf(getVar(eqParts[0])) == i + 1)){
+                    && (eqParts[0].indexOf(getVar()) == i + 1)){
                         continue;
                     }
                     if (eqParts[0].contains(".") 
@@ -259,36 +251,36 @@ public class Equation {
                 }
             }
             System.out.println("left simpNum = " + simpNum);
-            if (getVar(eqParts[0]).length() > 0 
-            && eqParts[0].contains(getVar(eqParts[0]))){// (num)var +/- res = num
-                if ((eqParts[0].indexOf(getVar(eqParts[0])) != 0)
+            if (getVar().length() > 0 
+            && eqParts[0].contains(getVar())){// (num)var +/- res = num
+                if ((eqParts[0].indexOf(getVar()) != 0)
                 && (eqParts[0].charAt(
-                    eqParts[0].indexOf(getVar(eqParts[0])) - 1) >= 48 
+                    eqParts[0].indexOf(getVar()) - 1) >= 48 
                 && eqParts[0].charAt(
-                    eqParts[0].indexOf(getVar(eqParts[0])) - 1) <= 57)){
+                    eqParts[0].indexOf(getVar()) - 1) <= 57)){
                         if (eqParts[0].lastIndexOf(
-                            ".", eqParts[0].indexOf(getVar(eqParts[0]))) 
-                        == eqParts[0].indexOf(getVar(eqParts[0])) - 2){
+                            ".", eqParts[0].indexOf(getVar())) 
+                        == eqParts[0].indexOf(getVar()) - 2){
                             eqParts[0] = eqParts[0].substring(
-                                eqParts[0].indexOf(getVar(eqParts[0])) - 3, 
+                                eqParts[0].indexOf(getVar()) - 3, 
                                 eqParts[0].lastIndexOf(
-                                    getVar(eqParts[0])) 
-                                    + getVar(eqParts[0]).length()
+                                    getVar()) 
+                                    + getVar().length()
                             );
                         }
                         else {
                             eqParts[0] = eqParts[0].substring(
-                                eqParts[0].indexOf(getVar(eqParts[0])) - 1,
+                                eqParts[0].indexOf(getVar()) - 1,
                                 eqParts[0].lastIndexOf(
-                                    getVar(eqParts[0])) + getVar(eqParts[0]).length()
+                                    getVar()) + getVar().length()
                             );        
                         }
                 }
                 else{
                     eqParts[0] = eqParts[0].substring(
-                        eqParts[0].indexOf(getVar(eqParts[0])),
-                        eqParts[0].lastIndexOf(getVar(eqParts[0])) 
-                        + getVar(eqParts[0]).length()
+                        eqParts[0].indexOf(getVar()),
+                        eqParts[0].lastIndexOf(getVar()) 
+                        + getVar().length()
                     );
                 }
                 if (operator == "+" && simpNum > 0){
@@ -301,8 +293,8 @@ public class Equation {
                     eqParts[0] += simpNum;    
                 }
             }
-            else if (getVar(eqParts[1]).length() > 0 
-            && eqParts[1].contains(getVar(eqParts[1]))){
+            else if (getVar().length() > 0 
+            && eqParts[1].contains(getVar())){
                 // +/-res = var (+ is void)
                 if (Double.toString(simpNum).contains(".0")){
                     eqParts[0] = Integer.toString(roundOnes(simpNum));
@@ -313,7 +305,7 @@ public class Equation {
             }
             System.out.println("left side: " + eqParts[0]);
         }
-        if (numCount(eqParts[1]) >= 2){ 
+        if (numCount(eqParts[1]) >= 2 || varCount(eqParts[1]) >= 2){ 
             System.out.println("here: numCount is at least 2 in right side");
             // ? = ... +/- num +/- num +/- ...
             double simpNum = 0; 
@@ -326,10 +318,10 @@ public class Equation {
                     operator = "-";
                 }
                 if (isNum(eqParts[1], i)){
-                    if ((getVar(eqParts[1]).length() > 0 
-                    && eqParts[1].contains(getVar(eqParts[1])))
+                    if ((getVar().length() > 0 
+                    && eqParts[1].contains(getVar()))
                     && (i < eqParts[1].length() - 1)
-                    && (eqParts[1].indexOf(getVar(eqParts[1])) == i + 1)){
+                    && (eqParts[1].indexOf(getVar()) == i + 1)){
                         continue;
                     }
                     if (eqParts[1].contains(".") 
@@ -373,28 +365,28 @@ public class Equation {
                 }
             }
             System.out.println("right simpNum = " + simpNum);
-            if (getVar(eqParts[1]).length() > 0 
-            && eqParts[1].contains(getVar(eqParts[1]))){// num = var +/- res
-                if ((eqParts[1].indexOf(getVar(eqParts[1])) != 0)
+            if (getVar().length() > 0 
+            && eqParts[1].contains(getVar())){// num = var +/- res
+                if ((eqParts[1].indexOf(getVar()) != 0)
                 && (eqParts[1].charAt(
-                    eqParts[1].indexOf(getVar(eqParts[1])) - 1) >= 48 
+                    eqParts[1].indexOf(getVar()) - 1) >= 48 
                 && eqParts[1].charAt(
-                    eqParts[1].indexOf(getVar(eqParts[1])) - 1) <= 57)){
+                    eqParts[1].indexOf(getVar()) - 1) <= 57)){
                     if (eqParts[1].lastIndexOf(
-                        ".", eqParts[1].indexOf(getVar(eqParts[1]))
+                        ".", eqParts[1].indexOf(getVar())
                     )
-                    == eqParts[1].indexOf(getVar(eqParts[1])) - 2){
+                    == eqParts[1].indexOf(getVar()) - 2){
                         eqParts[1] = eqParts[1].substring(
-                            eqParts[1].indexOf(getVar(eqParts[1])) - 3,
-                            eqParts[1].lastIndexOf(getVar(eqParts[1])) 
-                            + getVar(eqParts[1]).length()
+                            eqParts[1].indexOf(getVar()) - 3,
+                            eqParts[1].lastIndexOf(getVar()) 
+                            + getVar().length()
                         );
                     }
                     else {
                         eqParts[1] = eqParts[1].substring(
-                            eqParts[1].indexOf(getVar(eqParts[1])) - 1,
-                            eqParts[1].lastIndexOf(getVar(eqParts[1])) 
-                            + getVar(eqParts[1]).length()
+                            eqParts[1].indexOf(getVar()) - 1,
+                            eqParts[1].lastIndexOf(getVar()) 
+                            + getVar().length()
                         );    
                     }
                 }
@@ -423,19 +415,19 @@ public class Equation {
             }
             System.out.println("right side: " + eqParts[1]);
         }
-        if ((getVar(eqParts[0]).length() > 0) 
-        && (getVar(eqParts[1]).length() > 0)){
+        if (eqParts[0].contains(getVar()) 
+        && eqParts[1].contains(getVar())){
             System.out.println("here: both sides contain a variable");
             // * * * = * * *
             double leftCo = 1.0, rightCo = 1.0; // coefficients
-            if (eqParts[0].indexOf(getVar(eqParts[0])) != 0){
+            if (eqParts[0].indexOf(getVar()) != 0){
                 if (eqParts[0].contains(".")
-                && eqParts[0].indexOf(".") == eqParts[0].indexOf(getVar(eqParts[0])) - 2){
+                && eqParts[0].indexOf(".") == eqParts[0].indexOf(getVar()) - 2){
                     leftCo = 
                     Double.parseDouble(
                         eqParts[0].substring(
-                            eqParts[0].indexOf(getVar(eqParts[0])) - 3, 
-                            eqParts[0].indexOf(getVar(eqParts[0]))
+                            eqParts[0].indexOf(getVar()) - 3, 
+                            eqParts[0].indexOf(getVar())
                         )
                     );
                 }
@@ -443,27 +435,27 @@ public class Equation {
                     leftCo =
                     Double.parseDouble(
                         eqParts[0].substring(
-                            eqParts[0].indexOf(getVar(eqParts[1])) - 1, 
-                            eqParts[0].indexOf(getVar(eqParts[0]))
+                            eqParts[0].indexOf(getVar()) - 1, 
+                            eqParts[0].indexOf(getVar())
                         )
                     );
                 }
             }
             System.out.println("leftCo = " + leftCo);
-            if (eqParts[1].indexOf(getVar(eqParts[1])) != 0){
+            if (eqParts[1].indexOf(getVar()) != 0){
                 if (eqParts[1].contains(".")
                 && eqParts[1].charAt(
-                    eqParts[1].indexOf(getVar(eqParts[1])) - 2) == '.'){
+                    eqParts[1].indexOf(getVar()) - 2) == '.'){
                     rightCo = Double.parseDouble(eqParts[1].substring(
-                        eqParts[1].indexOf(getVar(eqParts[1])) - 3,
-                        eqParts[1].indexOf(getVar(eqParts[1]))));    
+                        eqParts[1].indexOf(getVar()) - 3,
+                        eqParts[1].indexOf(getVar())));    
                 }
                 else {
                     rightCo = 
                     Double.parseDouble(
                         eqParts[1].substring(
-                            eqParts[1].indexOf(getVar(eqParts[1])) - 1, 
-                            eqParts[1].indexOf(getVar(eqParts[1]))
+                            eqParts[1].indexOf(getVar()) - 1, 
+                            eqParts[1].indexOf(getVar())
                         )
                     );
                 }
@@ -479,32 +471,32 @@ public class Equation {
             rightCo -= rightCo;
             System.out.println("leftCo (After) = " + leftCo);
             if ((eqParts[0].contains(".") 
-            && eqParts[0].indexOf(getVar(eqParts[0])) > 3) 
+            && eqParts[0].indexOf(getVar()) > 3) 
             || (!eqParts[0].contains(".")
-            && eqParts[0].indexOf(getVar(eqParts[0])) > 2)){
+            && eqParts[0].indexOf(getVar()) > 2)){
                 // num +/- (num)var = *
                 if (eqParts[0].contains("+")){
                     if (Double.toString(leftCo).contains(".0")){
                         eqParts[0] = eqParts[0].substring(0,
                         eqParts[0].indexOf("+") + 1) + roundOnes(leftCo) 
-                                                        + getVar(eqParts[0]);
+                                                        + getVar();
                     }
                     else {
                         eqParts[0] = eqParts[0].substring(0,
                         eqParts[0].indexOf("+") + 1) + roundHun(leftCo) 
-                                                        + getVar(eqParts[0]);    
+                                                        + getVar();    
                     }
                 }
                 else if (eqParts[0].contains("-")){
                     if (Double.toString(leftCo).contains(".0")){
                         eqParts[0] = eqParts[0].substring(0,
                         eqParts[0].indexOf("-") + 1) + roundOnes(leftCo) 
-                                                        + getVar(eqParts[0]);    
+                                                        + getVar();    
                     }
                     else {
                         eqParts[0] = eqParts[0].substring(0,
                         eqParts[0].indexOf("-") + 1) + roundHun(leftCo) 
-                                                        + getVar(eqParts[0]);    
+                                                        + getVar();    
                     }
                 }
             }
@@ -513,34 +505,34 @@ public class Equation {
                 if (eqParts[0].contains("+")
                 || ((eqParts[0].contains("-") 
                 && eqParts[0].indexOf(
-                    "-", eqParts[0].indexOf(getVar(eqParts[0]))) > 0))){
+                    "-", eqParts[0].indexOf(getVar())) > 0))){
                         //System.out.println("In if statement");
                     if (Double.toString(leftCo).contains(".0")){
                         eqParts[0] = roundOnes(leftCo) + eqParts[0].substring(
-                            eqParts[0].indexOf(getVar(eqParts[0]))
+                            eqParts[0].indexOf(getVar())
                         );    
                     }
                     else {
                         eqParts[0] = roundHun(leftCo) + 
                         eqParts[0].substring(
-                            eqParts[0].indexOf(getVar(eqParts[0]))
+                            eqParts[0].indexOf(getVar())
                         );
                     }
                 }
                 else { // (num)var = *
                     //System.out.println("In numvar =");
                     if (Double.toString(leftCo).contains(".0")){
-                        eqParts[0] = roundOnes(leftCo) + getVar(eqParts[0]);
+                        eqParts[0] = roundOnes(leftCo) + getVar();
                     }
                     else {
-                        eqParts[0] = roundHun(leftCo) + getVar(eqParts[0]);
+                        eqParts[0] = roundHun(leftCo) + getVar();
                     }
                 }
             }
             if (!eqParts[0].contains(".")){
                 if (eqParts[0].contains("1")){
                     eqParts[0] = 
-                    eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])));
+                    eqParts[0].substring(eqParts[0].indexOf(getVar()));
                 }
                 else if (eqParts[0].contains("0")){
                     eqParts[0] = "0";
@@ -549,9 +541,9 @@ public class Equation {
             System.out.println("left side: " + eqParts[0]);
             // The right side of the equation will only adopt the lone number
             if ((eqParts[1].contains(".") 
-            && eqParts[1].indexOf(getVar(eqParts[1])) > 3) 
+            && eqParts[1].indexOf(getVar()) > 3) 
             || (!eqParts[1].contains(".")
-            && eqParts[1].indexOf(getVar(eqParts[1])) > 2)){
+            && eqParts[1].indexOf(getVar()) > 2)){
                 // * = num +/- (num)var previously
                 if (eqParts[1].contains("+")){
                     eqParts[1] = 
@@ -585,9 +577,9 @@ public class Equation {
             lone = Double.parseDouble(eqParts[1]);
             if (eqParts[0].contains("+")){
                 if ((eqParts[0].contains(".") 
-                && eqParts[0].indexOf(getVar(eqParts[0])) > 3) 
+                && eqParts[0].indexOf(getVar()) > 3) 
                 || (!eqParts[0].contains(".")
-                && eqParts[0].indexOf(getVar(eqParts[0])) > 2)){   
+                && eqParts[0].indexOf(getVar()) > 2)){   
                     // num + (num)var = num
                     eqNum = Double.parseDouble(eqParts[0].substring(0, 
                     eqParts[0].indexOf("+")));
@@ -605,9 +597,9 @@ public class Equation {
             }
             else if (eqParts[0].contains("-")){
                 if ((eqParts[0].contains(".") 
-                && eqParts[0].indexOf(getVar(eqParts[0])) > 3) 
+                && eqParts[0].indexOf(getVar()) > 3) 
                 || (!eqParts[0].contains(".")
-                && eqParts[0].indexOf(getVar(eqParts[0])) > 2)){   // num - (num)var = num
+                && eqParts[0].indexOf(getVar()) > 2)){   // num - (num)var = num
                     eqNum = Double.parseDouble(eqParts[0].substring(0, 
                     eqParts[0].indexOf("-")));
                     lone = (lone - eqNum) * -1;
@@ -626,10 +618,10 @@ public class Equation {
             if (isNum(eqParts[0], 0)){
                 lone /= Double.valueOf(
                     eqParts[0].substring(
-                        0, eqParts[0].indexOf(getVar(eqParts[0]))
+                        0, eqParts[0].indexOf(getVar())
                         )
                     );
-                eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar(eqParts[0])));
+                eqParts[0] = eqParts[0].substring(eqParts[0].indexOf(getVar()));
                 System.out.println("left side: " + eqParts[0]);
             }
             System.out.println("result = " + lone);
@@ -647,7 +639,7 @@ public class Equation {
             System.out.println("here: right side contains var and constant");
             lone = Double.parseDouble(eqParts[0]);
             if (eqParts[1].contains("+")){
-                if (eqParts[1].indexOf(getVar(eqParts[1])) > 2){   // num = num + (num)var
+                if (eqParts[1].indexOf(getVar()) > 2){   // num = num + (num)var
                     eqNum = Double.parseDouble(eqParts[1].substring(0, 
                     eqParts[1].indexOf("+")));
                     lone -= eqNum;
@@ -663,7 +655,7 @@ public class Equation {
                 }
             }
             if (eqParts[1].contains("-")){
-                if (eqParts[1].indexOf(getVar(eqParts[1])) > 2){   // num = num - (num)var
+                if (eqParts[1].indexOf(getVar()) > 2){   // num = num - (num)var
                     eqNum = Double.parseDouble(eqParts[1].substring(0, 
                     eqParts[1].indexOf("-")));
                     lone = (lone - eqNum) * -1;
@@ -681,10 +673,10 @@ public class Equation {
             if (isNum(eqParts[1], 0)){
                 lone /= Double.valueOf(
                     eqParts[1].substring(
-                        0, eqParts[1].indexOf(getVar(eqParts[1]))
+                        0, eqParts[1].indexOf(getVar())
                         )
                     );
-                eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar(eqParts[1])));
+                eqParts[1] = eqParts[1].substring(eqParts[1].indexOf(getVar()));
                 System.out.println("right side: " + eqParts[1]);
             }
             solution = eqParts[1] + " = ";
@@ -697,21 +689,21 @@ public class Equation {
         }
         else { // * = *
             // Swap Sides if Variable is not on Left Side
-            if (getVar(eqParts[0]).length() == 0){    // num = var
+            if (!eqParts[0].contains(getVar())){    // num = var
                 String temp = eqParts[0].trim();
                 eqParts[0] = eqParts[1].trim();
                 eqParts[1] = temp;
         
             }
             System.out.println(eqParts[0]);
-            if ((getVar(eqParts[0]).length() != 0 && eqParts[0].contains(getVar(eqParts[0])))
-            && eqParts[0].indexOf(getVar(eqParts[0])) != 0){
-                double co = Double.parseDouble(eqParts[0].substring(0, eqParts[0].indexOf(getVar(eqParts[0]))));
+            if ((getVar().length() != 0 && eqParts[0].contains(getVar()))
+            && eqParts[0].indexOf(getVar()) != 0){
+                double co = Double.parseDouble(eqParts[0].substring(0, eqParts[0].indexOf(getVar())));
                 lone = Double.valueOf(eqParts[1]);
                 lone /= co;
                 lone = roundHun(lone);
                 eqParts[0] = eqParts[0].substring(
-                    eqParts[0].indexOf(getVar(eqParts[0]))
+                    eqParts[0].indexOf(getVar())
                 );
                 eqParts[1] = "" + roundHun(lone);
             }
