@@ -3,7 +3,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 // Private methods are to be used only in the Equation class methods
-public class Equation {
+public class Equation extends Algebra{
     private String equation;
     // Class Constructor
     public Equation(String equation){
@@ -31,66 +31,6 @@ public class Equation {
         }
         System.out.println("equation variable = " + variable);
         return variable;
-    }
-    /* If a decimal has a 0 to the right of the decimal place, the number 
-       should be rounded by the ones digit */
-    private int roundOnes(double num){
-        String numText = Double.toString(num);
-        numText = numText.substring(0, numText.indexOf("."));
-        return Integer.valueOf(numText);
-    }
-    // This method returns the double value rounded to the hundredths place
-    private double roundHun(double num){
-        /* Compares hundredths places by getting rid of the ones and tenths 
-        digits */
-        //System.out.println(num*10);
-        //System.out.println(Math.ceil(num * 10));
-        //System.out.println((num * 10) - Math.ceil(num*10));
-        if (((num * 10) - Math.floor(num*10)) >= 0.5 
-        && Math.floor(num*10) <= num * 10){
-            num += 0.05;
-        }
-        else if (num < 0 && (num * 10) - Math.ceil(num * 10) <= -0.5){
-            num -= 0.05;
-        }
-        // ex. 5.55 * 10 = 55.5 - 55 = 0.5 >= 0.5 = true
-        // ex. -5.55 * 10 = -55.5 - (-55) = -0.5 <= -0.5 = true
-        String numText = "" + num;
-        if (numText.length() > 3){
-            numText = numText.substring(0, 4);
-        }
-        return Double.valueOf(numText);
-    }
-    // Converts fractions into decimals 
-    private String fracToDecs(String eq){
-        for (int i = 0; i < eq.length(); i++){
-            if (eq.charAt(i) == '/'){
-                eq = 
-                eq.replace(
-                    eq.substring(eq.indexOf("/", i) - 1, 
-                        eq.indexOf("/", i) + 2),
-                    Double.parseDouble(
-                        eq.substring(
-                            eq.indexOf("/", i) - 1, eq.indexOf("/", i)
-                        )
-                    ) 
-                    / Double.parseDouble(
-                        eq.substring(
-                            eq.indexOf("/", i) + 1, eq.indexOf("/", i) + 2
-                        )
-                    ) + ""
-                );
-            }
-        }
-        return eq;
-    }
-    /* Determines whether a character in either side of the equation is a 
-       number */
-    private boolean isNum(String expr, int index){
-        if ((expr.charAt(index) >= 48 && expr.charAt(index) <= 57)){
-            return true;
-        }
-        return false;
     }
     // This method counts all the numbers in one side of an equation
     private int numCount(String expr){
@@ -214,12 +154,12 @@ public class Equation {
      * coefficient is not 1.
      */
     public String solve(){
-        String equation = getEquation();
+        String solverEquation = getEquation();
         // All fractions in the solver convert to decimals for better ease
         if (equation.contains("/")){
-            equation = fracToDecs(equation);
+            solverEquation = fracToDecs(equation);
         }
-        String[] eqParts = equation.split("=");
+        String[] eqParts = solverEquation.split("=");
         eqParts[0] = eqParts[0].trim();
         eqParts[1] = eqParts[1].trim();
         String solution = "";
