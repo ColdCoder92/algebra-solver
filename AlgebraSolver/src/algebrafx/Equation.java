@@ -299,7 +299,8 @@ public class Equation extends Algebra{
         if (numCount(eqParts[1]) >= 2 || varCount(eqParts[1]) >= 2){ 
             System.out.println("here: numCount is at least 2 in right side");
             // ? = ... +/- num +/- num +/- ...
-            double simpNum = 0; 
+            double simpNum = 0;
+            double simpVar = 0; 
             String operator = "+";
             for (int i = 0; i < eqParts[1].length(); i++){
                 if (eqParts[1].charAt(i) == '+'){
@@ -309,11 +310,6 @@ public class Equation extends Algebra{
                     operator = "-";
                 }
                 if (isNum(eqParts[1], i)){
-                    if (eqParts[1].contains(getVar())
-                    && (i < eqParts[1].length() - 1)
-                    && (eqParts[1].indexOf(getVar()) == i + 1)){
-                        continue;
-                    }
                     if (eqParts[1].contains(".") 
                     && eqParts[1].lastIndexOf(".", i) == i - 1){
                         continue;
@@ -321,26 +317,58 @@ public class Equation extends Algebra{
                     if (operator.equals("+")){
                         if (eqParts[1].contains(".") 
                         && eqParts[1].indexOf(".", i) == i + 1){
-                            simpNum += Double.valueOf(
-                                eqParts[1].substring(
-                                    i, eqParts[1].indexOf(".", i) + 2
-                                )
-                            );
+                            if (eqParts[1].contains(getVar())
+                            && (i < eqParts[1].length() - 3)
+                            && (eqParts[1].indexOf(getVar(), i) == i + 3)){
+                                simpVar += Double.valueOf(
+                                    eqParts[1].substring(
+                                        i, eqParts[1].indexOf(getVar(), i)
+                                    )
+                                );
+                                System.out.println("simpVar " + i + " = " + simpVar);
+                                System.out.println(eqParts[1].indexOf(getVar(), i));
+                            }        
+                            else {
+                                simpNum += Double.valueOf(
+                                    eqParts[1].substring(
+                                        i, eqParts[1].indexOf(".", i) + 2
+                                    )
+                                );       
+                            }
                         }
                         else {
-                            simpNum += 
-                            Integer.valueOf(eqParts[1].substring(i, i + 1));
+                            if (eqParts[1].contains(getVar())
+                            && (i < eqParts[1].length() - 1)
+                            && (eqParts[1].indexOf(getVar(), i) == i + 1)){
+                                simpVar += 
+                                Integer.valueOf(eqParts[1].substring(i, i + 1));
+                            }        
+                            else {
+                                simpNum += 
+                                Integer.valueOf(eqParts[1].substring(i, i + 1));    
+                            }
                         }
                     }
                     else if (operator.equals("-")){
                         if (eqParts[1].contains(".") 
                         && eqParts[1].indexOf(".", i) == i + 1){
                             if (i < eqParts[1].length() - 3){
-                                simpNum -= Double.valueOf(
-                                    eqParts[1].substring(
-                                        i, eqParts[1].indexOf(".", i) + 2
-                                    )
-                                );
+                                if (eqParts[1].contains(getVar())
+                                && (i < eqParts[1].length() - 3)
+                                && (eqParts[1].indexOf(getVar(), i) == i + 3)){
+                                    simpVar -= Double.valueOf(
+                                        eqParts[1].substring(
+                                            i, eqParts[1].indexOf(getVar(), i)
+                                        )
+                                    );
+                                }        
+                                else {
+                                    simpNum -= Double.valueOf(
+                                        eqParts[1].substring(
+                                            i, eqParts[1].indexOf(".", i) + 2
+                                        )
+                                    );       
+                                }
                             }
                             else {
                                 simpNum -= 
@@ -348,8 +376,16 @@ public class Equation extends Algebra{
                             }
                         }
                         else {
-                            simpNum -= 
-                            Integer.valueOf(eqParts[1].substring(i, i + 1));
+                            if (eqParts[1].contains(getVar())
+                            && (i < eqParts[1].length() - 1)
+                            && (eqParts[1].indexOf(getVar(), i) == i + 1)){
+                                simpVar -= 
+                                Integer.valueOf(eqParts[1].substring(i, i + 1));
+                            }        
+                            else {
+                                simpNum -= 
+                                Integer.valueOf(eqParts[1].substring(i, i + 1));    
+                            }
                         }
                     }
                 }
