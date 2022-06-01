@@ -70,7 +70,8 @@ public class Solver extends Application{
         fullSelect.setTranslateY(25);
         // Create and Position input label and text field
         TextField input = new TextField();
-        Label inputLabel = new Label("Welcome! Please enter an equation to solve.");
+        Label inputLabel = 
+        new Label("Welcome! Please enter an equation or expression to solve.");
         root.add(inputLabel, 3, 0);
         root.add(input, 3, 2);
         input.setOpacity(0);
@@ -97,7 +98,7 @@ public class Solver extends Application{
         Polygon direction = new Polygon(0, 0, 40, 0, 0, 40);
         Group speech = new Group(direction, upperBubble, lowerBubble, divider, inputLabel);
         root.add(speech, 3, 0);
-        inputLabel.setTranslateX(-125);
+        inputLabel.setTranslateX(-150);
         direction.setTranslateX(-lowerBubble.getRadiusX() - 13);
         direction.setTranslateY(lowerBubble.getRadiusY() - 5);
         direction.setRotate(20);
@@ -275,8 +276,8 @@ public class Solver extends Application{
                 loadingHover.setByY(-5);
                 loadingHover.play();
             }
-            String equationString = input.getText();
-            Equation eq = new Equation(equationString);
+            String algebraString = input.getText();
+            Equation eq = new Equation(algebraString);
             // Loading Finished Animation
             FadeTransition loadingDone = new FadeTransition(Duration.seconds(1), loading);
             loadingDone.setCycleCount(1);
@@ -295,7 +296,7 @@ public class Solver extends Application{
             fadeEyes.setByValue(-1);
             fadeEyes.setCycleCount(1);
             fadeEyes.play();
-            if (eq.validateBool()){
+            if (eq.validateBool() || !eq.getEquation().contains("=")){
                 // Show Happy Eyes
                 FadeTransition happy = new FadeTransition(Duration.millis(500), happyEyes);
                 happy.setDelay(Duration.seconds(4));
@@ -330,7 +331,13 @@ public class Solver extends Application{
                 armsAdjustment.setAutoReverse(true);
                 armsAdjustment.play();
 
-                result.setText(eq.solve());
+                if (!(eq.getEquation().contains("="))){
+                    Expression ex = new Expression(algebraString);
+                    result.setText(ex.solve());
+                }
+                else {
+                    result.setText(eq.solve());
+                }
                 // Hide Happy Eyes
                 FadeTransition fadeHappyEyes = new FadeTransition(Duration.millis(500), happyEyes);
                 fadeHappyEyes.setDelay(Duration.seconds(8));
@@ -367,9 +374,9 @@ public class Solver extends Application{
             showEyes.setCycleCount(1);
             showEyes.play();
         });
-        Scene main = new Scene(menu, 500, 500);
-        Scene body = new Scene(root, 500, 500);
-        Scene configurations = new Scene(settings, 500, 500);
+        Scene main = new Scene(menu, 575, 575);
+        Scene body = new Scene(root, 575, 575);
+        Scene configurations = new Scene(settings, 575, 575);
         // Create "Activate Mechanism"
         darkSelect.setOnAction(e -> {
             if (darkSelect.isSelected()){
