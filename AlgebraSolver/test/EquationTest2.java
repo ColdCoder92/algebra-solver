@@ -34,4 +34,16 @@ public class EquationTest2 {
         assertTrue(eq.validateBool());
         assertEquals("x = -2", eq.solve());
     }
+    @Test
+    public void test31(){
+        var eq = new Equation("2.5x + 2.5x - 2.5 = 2.5x + 2.4 + 0.1");
+        assertTrue(eq.validateBool());
+        assertEquals("x = 2", eq.solve());
+    }
+    @Test
+    public void test32(){
+        var eq = new Equation("1/2 + x = 3/2");
+        assertTrue(eq.validateBool());
+        assertEquals("x = 1", eq.solve());
+    }
 }
